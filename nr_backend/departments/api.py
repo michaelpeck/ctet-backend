@@ -19,15 +19,16 @@ from .emails import supportRequestEmail
 # Project Viewset
 class SupportRequestViewSet(viewsets.ModelViewSet):
 
-    # permission_classes = [
-    #     permissions.IsAuthenticated,
-    # ]
-    queryset = SupportRequest.objects.all()
+    permission_classes = [
+        permissions.AllowAny,
+    ]
+    queryset = SupportRequests.objects.all()
     serializer_class = SupportRequestSerializer
     lookup_field = 'request_id'
 
-    @action(detail=False, methods=["POST"])
+    @action(detail=False, methods=['POST'])
     def submit(self, request, request_id=None):
+        print('Hi')
 
         # Save request
         serializer = self.serializer_class(data=request.data)
@@ -37,14 +38,12 @@ class SupportRequestViewSet(viewsets.ModelViewSet):
         # Send email
         contact = SupportContacts.objects.filter(contact_id=request.data['contact_id'])
         contact_serializer = SupportContactSerializer(contact, many=False)
-        to_email = contact_serializer[0]['email']
-        # for affl in affl_serializer.data:
-        #     to_email.append(affl['email'])
-        subject = request.data['contact_id'] + " - Support Request"
-        from_email = settings.EMAIL_HOST_USER
-        to_email = ['michael.peck@nemours.org']
+        to_email = contact_serializer['email']
+        # subject = request.data['contact_id'] + " - Support Request"
+        # from_email = settings.EMAIL_HOST_USER
+        # to_email = ['michael.peck@nemours.org']
 
-        supportRequestEmail(subject, from_email, to_email, serializer.data)
-
+        # supportRequestEmail(subject, from_email, to_email, serializer.data)
+        print(contact_serializer)
 
         return Response(serializer.data, status=200)

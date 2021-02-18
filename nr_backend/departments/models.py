@@ -34,6 +34,7 @@ class SupportContacts(models.Model):
 class SupportRequests(models.Model):
     request_id = models.AutoField(primary_key=True)
     department = models.CharField(max_length=16, blank=True, null=True)
+    contact_id = models.IntegerField(blank=True, null=True)
     type = models.CharField(max_length=16, blank=True, null=True)
     name = models.CharField(max_length=64, blank=True, null=True)
     email = models.CharField(max_length=64, blank=True, null=True)
