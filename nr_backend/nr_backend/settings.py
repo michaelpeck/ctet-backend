@@ -35,6 +35,7 @@ CORS_ORIGIN_ALLOW_ALL = True
 
 INSTALLED_APPS = [
     'departments.apps.DepartmentsConfig',
+    'clinical_effort.apps.ClinicalEffortConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

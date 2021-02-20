@@ -1,15 +1,16 @@
-from django.urls import path
+from rest_framework import routers
+from .api import CTEffortViewSet
 
-from . import views
+router = routers.DefaultRouter()
+router.register('api/effort-instances', CTEffortViewSet, 'effort instances')
 
-urlpatterns = [
-    path('', views.index, name='index'),
-]
+urlpatterns = router.urls
 
-# from rest_framework import routers
+
+# from django.urls import path
 #
+# from . import views
 #
-# router = routers.DefaultRouter()
-#
-#
-# urlpatterns = router.urls
+# urlpatterns = [
+#     path('', views.index, name='index'),
+# ]
