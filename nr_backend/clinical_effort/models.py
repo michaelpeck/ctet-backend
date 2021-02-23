@@ -29,6 +29,7 @@ class CTEffort(models.Model):
 # Cycle types model
 class CycleTypes(models.Model):
     ct_id = models.AutoField(primary_key=True)
+    type = models.CharField(max_length=32, blank=True, null=True)
     name = models.CharField(max_length=32, blank=True, null=True)
 
     class Meta:
@@ -62,9 +63,11 @@ class TrialArms(models.Model):
 class Cycles(models.Model):
     c_id = models.AutoField(primary_key=True)
     instance = models.ForeignKey('CTEffort',on_delete=models.CASCADE,)
-    arm = models.ForeignKey('TrialArms',on_delete=models.CASCADE,)
+    arm = models.ForeignKey('TrialArms',on_delete=models.CASCADE, null=True)
+    type = models.ForeignKey('CycleTypes',on_delete=models.CASCADE,)
+    number_cycles = models.IntegerField(blank=True, null=True)
     number_visits = models.IntegerField(blank=True, null=True)
-    heading = models.CharField(max_length=32, blank=True, null=True)
+    name = models.CharField(max_length=32, blank=True, null=True)
     copy_hours = models.BooleanField(default=False)
     updated = models.DateTimeField(auto_now=True)
     updated_by = models.IntegerField(blank=True, null=True)
@@ -77,7 +80,7 @@ class Cycles(models.Model):
 class Visits(models.Model):
     v_id = models.AutoField(primary_key=True)
     instance = models.ForeignKey('CTEffort',on_delete=models.CASCADE,)
-    arm = models.ForeignKey('TrialArms',on_delete=models.CASCADE,)
+    arm = models.ForeignKey('TrialArms',on_delete=models.CASCADE, null=True)
     cycle = models.ForeignKey('Cycles',on_delete=models.CASCADE,)
     updated = models.DateTimeField(auto_now=True)
     updated_by = models.IntegerField(blank=True, null=True)

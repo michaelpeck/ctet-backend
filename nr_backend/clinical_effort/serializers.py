@@ -10,6 +10,7 @@ class CTEffortSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+
 # Cycle types
 class CycleTypesSerializer(serializers.ModelSerializer):
 

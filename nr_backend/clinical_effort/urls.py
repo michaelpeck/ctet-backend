@@ -2,7 +2,7 @@ from rest_framework import routers
 from .api import CTEffortViewSet
 
 router = routers.DefaultRouter()
-router.register('api/effort-instances', CTEffortViewSet, 'effort instances')
+router.register('api/effort', CTEffortViewSet, 'effort instances')
 
 urlpatterns = router.urls
 
