@@ -1,9 +1,17 @@
 from rest_framework import serializers
 from clinical_effort.models import CTEffort, CycleTypes, PersonnelTypes, TrialArms, Cycles, Visits, Personnel, CRCVisit, NCVisit, DCVisit, GeneralVisit
 
+# Clinical trial instance cycles
+class CyclesSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Cycles
+        fields = '__all__'
 
 # Clinical trial effort instance
 class CTEffortSerializer(serializers.ModelSerializer):
+
+    cycles = CyclesSerializer(source='cycles_set', many=True)
 
     class Meta:
         model = CTEffort
@@ -34,12 +42,7 @@ class TrialArmsSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-# Clinical trial instance cycles
-class CyclesSerializer(serializers.ModelSerializer):
 
-    class Meta:
-        model = Cycles
-        fields = '__all__'
 
 
 # Clinical trial instance visits
