@@ -1,13 +1,8 @@
 
-Hi there, \n
-One of your projects just received a status change. \n\n
+Hello, \n
+Someone just submitted a support request for {{ department }}. \n\n
 
-Project: {{ title }}  \n
-PI: {{ pi }} \n
-RSP ID: {{ rsp_id }}  \n
-Committee: {{ committee }} \n
-New Status: {{ new_status }} \n
-Comment by: {{ commented_by }} \n
-Date: {{ date }} \n
-
-\n\nComments: {{ comments }} \n
+Name: {{ name }}  \n\n
+Email given: {{ email }} \n\n
+Subject: {{ subject }}  \n\n
+Message: {{ message }} \n\n

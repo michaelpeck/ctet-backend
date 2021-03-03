@@ -8,7 +8,7 @@ from django.utils.module_loading import import_string
 from django.utils import timezone
 import datetime
 
-# Support request model
+# Department model
 class Departments(models.Model):
     dept_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=64, blank=True, null=True)
