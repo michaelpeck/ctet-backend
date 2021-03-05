@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 
 from pathlib import Path
 
+import dj_database_url
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -25,7 +27,7 @@ SECRET_KEY = 'ei+e)krxn-a46)&9fn(490wx3=y-1!%rba9le12=ra=xm0*lzh'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS=['http://localhost:3000', '127.0.0.1']
+# ALLOWED_HOSTS=['http://localhost:3000', '127.0.0.1']
 # CORS_ORIGIN_ALLOW_ALL = False
 # CORS_ORIGIN_WHITELIST = ('http://localhost:3000',)
 # ALLOWED_HOSTS=['*']
@@ -85,12 +87,16 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'nbrapps',
-        'USER': 'michael',
-        'PASSWORD': 'sampPass',
-        'HOST': 'localhost',
-        'PORT': ''
+        'USER': 'nbrapps',
+        'PASSWORD': '854kE4msK0DlAHVt',
+        'HOST': '10.20.9.199',
+        'PORT': '',
     }
 }
+
+# DATABASES['default'] = dj_database_url.config(default='mysql://'+'nbrapps'+':'+'854kE4msK0DlAHVt'+'@'+'10.20.9.199'+':'+'3306'+'/'+'nbrapps')
+
+
 
 # 'NAME': BASE_DIR / 'db.sqlite3',
 
