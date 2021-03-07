@@ -31,8 +31,8 @@ class SupportRequestViewSet(viewsets.ModelViewSet):
         print('Hi')
         print(request.data)
 
-        contact_id = request.data['contact_id']
-        del request.data['contact_id']
+        # contact_id = request.data['contact_id']
+        # del request.data['contact_id']
 
         # Save request
         serializer = self.serializer_class(data=request.data)
