@@ -28,27 +28,21 @@ class SupportRequestViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['POST'])
     def submit(self, request, request_id=None):
-        print('Hi')
-        print(request.data)
-
-        # contact_id = request.data['contact_id']
-        # del request.data['contact_id']
 
         # Save request
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
 
+        # Get contact
+        contact = SupportContacts.objects.filter(contact_id=request.data['contact'])
+        contact_serializer = SupportContactSerializer(contact[0], many=False)
+
         # Send email
-        # contact = SupportContacts.objects.filter(contact_id=request.data['contact_id'])
-        # contact_serializer = SupportContactSerializer(contact, many=False)
-        # to_email = contact_serializer['email']
-        # subject = request.data['contact_id'] + " - Support Request"
-        # from_email = settings.EMAIL_HOST_USER
-        # to_email = ['michael.peck@nemours.org']
+        to_email = contact_serializer.data['email']
+        subject = contact_serializer.data['type_name'] + " - Support Request"
+        from_email = settings.EMAIL_HOST_USER
+        to_email = ['michael.peck@nemours.org']
+        supportRequestEmail(subject, from_email, to_email, serializer.data, contact_serializer.data['type_name'])
 
-        # supportRequestEmail(subject, from_email, to_email, serializer.data)
-        # print(contact_serializer)
-
-        return Response('Yo', status=200)
-        # return Response(serializer.data, status=200)
+        return Response('All good', status=200)

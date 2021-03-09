@@ -296,7 +296,7 @@
     </style>
   </head>
   <body class="">
-    <span class="preheader">One of your projects just received a status change.</span>
+    <span class="preheader">{{ type }} Suport Request</span>
     <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="body">
       <tr>
         <td>&nbsp;</td>
@@ -311,39 +311,23 @@
                     <tr>
                       <td>
                         <p>Hi there,</p>
-                        <p>One of your projects just received a status change.</p>
+                        <p>Someone just submitted a {{ type }} suport request.</p>
                         <table role="presentation" border="0" cellpadding="10" cellspacing="10">
                           <tr>
-                            <th style="width: 120px">Title:</th>
-                            <td>{{ title }}</td>
+                            <th>Name:</th>
+                            <td>{{ name }}</td>
                           </tr>
                           <tr>
-                            <th>PI:</th>
-                            <td>{{ pi }}</td>
+                            <th>Email:</th>
+                            <td>{{ email }}</td>
                           </tr>
                           <tr>
-                            <th>RSP ID:</th>
-                            <td>{{ rsp_id }}</td>
+                            <th>Subject:</th>
+                            <td>{{ subject }}</td>
                           </tr>
                           <tr>
-                            <th>Committee:</th>
-                            <td>{{ committee }}</td>
-                          </tr>
-                          <tr>
-                            <th>New Status:</th>
-                            <td>{{ new_status }}</td>
-                          </tr>
-                          <tr>
-                            <th>Commented By:</th>
-                            <td>{{ commented_by }}</td>
-                          </tr>
-                          <tr>
-                            <th>Date:</th>
-                            <td>{{ date }}</td>
-                          </tr>
-                          <tr>
-                            <th>Comments:</th>
-                            <td>{{ comments }}</td>
+                            <th>Message:</th>
+                            <td>{{ message }}</td>
                           </tr>
                         </table>
                       </td>
@@ -354,18 +338,6 @@
             <!-- END MAIN CONTENT AREA -->
             </table>
             <!-- END CENTERED WHITE CONTAINER -->
-            <!-- START FOOTER -->
-            <div class="footer">
-              <table role="presentation" border="0" cellpadding="0" cellspacing="0">
-                <tr>
-                  <td class="content-block">
-                    <span class="apple-link">Research Services Portal - Nemours Children's Health System</span>
-                    <br>Is this email not for you? <a href="http://i.imgur.com/CScmqnj.gif">Contact Admin</a>.
-                  </td>
-                </tr>
-              </table>
-            </div>
-            <!-- END FOOTER -->
           </div>
         </td>
         <td>&nbsp;</td>

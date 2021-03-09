@@ -1,8 +1,13 @@
 
-Hello, \n
-Someone just submitted a support request for {{ department }}. \n\n
+Hello,
 
-Name: {{ name }}  \n\n
-Email given: {{ email }} \n\n
-Subject: {{ subject }}  \n\n
-Message: {{ message }} \n\n
+Someone just submitted a {{ type }} support request.
+
+
+Name: {{ name }}
+
+Email: {{ email }}
+
+Subject: {{ subject }}
+
+Message: {{ message }}
