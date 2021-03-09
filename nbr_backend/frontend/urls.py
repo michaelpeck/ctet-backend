@@ -8,4 +8,6 @@ urlpatterns = [
     re_path('bric', views.index),
     re_path('requests', views.index),
     re_path('request-submitted', views.index),
+    re_path('effort', views.index),
+    re_path('effort/', views.index),
 ]
