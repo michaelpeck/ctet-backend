@@ -29,9 +29,15 @@ class SupportRequestViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['POST'])
     def submit(self, request, request_id=None):
 
+        print(request.data)
+
+
+
+        print(request.data)
+
         # Save request
         serializer = self.serializer_class(data=request.data)
-        serializer.is_valid(raise_exception=True)
+        serializer.is_valid()
         serializer.save()
 
         # Get contact
