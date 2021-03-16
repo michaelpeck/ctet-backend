@@ -1,5 +1,6 @@
 # Custom
 nbr_backend/nbr_backend/settings.py
+*.DS_Store
 
 # Created by https://www.toptal.com/developers/gitignore/api/django
 # Edit at https://www.toptal.com/developers/gitignore?templates=django
