@@ -82,11 +82,11 @@ WSGI_APPLICATION = 'nbr_backend.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'nbrapps',
-        'USER': 'michael',
-        'PASSWORD': 'sampPass',
-        'HOST': 'localhost',
-        'PORT': ''
+        'NAME': config('DB_NAME'),
+        'USER': config('DB_USER'),
+        'PASSWORD': config('DB_PASSWORD'),
+        'HOST': config('DB_HOST'),
+        'PORT': config('DB_PORT', default='')
     }
 }
 

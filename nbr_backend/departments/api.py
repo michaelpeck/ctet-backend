@@ -29,8 +29,6 @@ class SupportRequestViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['POST'])
     def submit(self, request, request_id=None):
 
-        print(request.data)
-
         # Save request
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -40,7 +38,6 @@ class SupportRequestViewSet(viewsets.ModelViewSet):
         contact = SupportContacts.objects.filter(contact_id=request.data['contact'])
         contact_serializer = SupportContactSerializer(contact[0], many=False)
 
-        print(contact_serializer.data)
         # Send email
         to_email = [contact_serializer.data['email']]
         subject = contact_serializer.data['type_name'] + " - Support Request"
