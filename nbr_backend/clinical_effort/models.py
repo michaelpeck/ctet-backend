@@ -65,10 +65,10 @@ class Cycles(models.Model):
     instance = models.ForeignKey('CTEffort',on_delete=models.CASCADE,)
     arm = models.ForeignKey('TrialArms',on_delete=models.CASCADE, null=True)
     type = models.ForeignKey('CycleTypes',on_delete=models.CASCADE,)
-    number_cycles = models.IntegerField(blank=True, null=True)
-    number_visits = models.IntegerField(blank=True, null=True)
+    number_cycles = models.IntegerField(blank=True, null=True, default=1)
+    number_visits = models.IntegerField(blank=True, null=True, default=1)
     name = models.CharField(max_length=32, blank=True, null=True)
-    copy_hours = models.BooleanField(default=False)
+    copy_hours = models.BooleanField(default=True)
     updated = models.DateTimeField(auto_now=True)
     updated_by = models.IntegerField(blank=True, null=True)
 

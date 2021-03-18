@@ -10,8 +10,8 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
+    path('', include('departments.urls')),
+    path('', include('clinical_effort.urls')),
     path('', include('frontend.urls')),
-    path('depts/', include('departments.urls')),
-    path('effort-tool/', include('clinical_effort.urls')),
     path('admin/', admin.site.urls),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

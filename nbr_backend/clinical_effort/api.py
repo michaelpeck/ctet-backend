@@ -1,5 +1,4 @@
 from django.db.models import Q
-from django.core.mail import send_mail, EmailMultiAlternatives
 from django.template.loader import get_template
 from django.conf import settings
 
@@ -25,6 +24,30 @@ class CTEffortViewSet(viewsets.ModelViewSet):
     serializer_class = CTEffortSerializer
     lookup_field = 'cte_id'
 
+    @action(detail=True, methods=['GET'])
+    def add_arm(self, request, cte_id=None):
+
+        project = CTEffort.objects.get(cte_id=cte_id)
+
+        # Create arm
+        arm = TrialArms(instance=project, name='New Arm')
+        arm.save()
+
+        # Add cycles for arm 1
+        arm_cycles = ['standard', 'custom']
+        for cycle in arm_cycles:
+            cycle_type = CycleTypes.objects.get(type=cycle)
+            new_cycle = Cycles(instance=project, arm=arm, type=cycle_type, number_cycles=1, name=cycle_type.name)
+            new_cycle.save()
+
+        project = CTEffort.objects.get(cte_id=cte_id)
+        p_serializer = self.serializer_class(project, many=False)
+        print('I made it')
+        print(p_serializer.data)
+
+
+        return Response(p_serializer.data, status=200)
+
     @action(detail=False, methods=['PUT'])
     def new(self, request, cte_id=None):
 
@@ -32,10 +55,7 @@ class CTEffortViewSet(viewsets.ModelViewSet):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        print(serializer.data)
-
         project = CTEffort.objects.get(cte_id=serializer.data['cte_id'])
-
 
         # Create general project cycles
         standard_cycles = ['pre-screening', 'screening', 'end-of-treatment', 'follow-up']
@@ -47,7 +67,6 @@ class CTEffortViewSet(viewsets.ModelViewSet):
         # Create 1 arm
         arm_1 = TrialArms(instance=project, name='Arm 1')
         arm_1.save()
-        print(arm_1)
 
         # Add cycles for arm 1
         arm_cycles = ['standard', 'custom']
@@ -73,44 +92,9 @@ class CTEffortViewSet(viewsets.ModelViewSet):
         send_back['post_cycles'] = post_cycles_serializer.data
         print(p_serializer.data)
 
-
         return Response(send_back, status=200)
 
-    action(detail=False, methods=['PUT'])
-    def add_arm(self, request, cte_id=None):
 
-        project = CTEffort.objects.get(cte_id=cte_id)
-
-        # Create arm
-        arm = TrialArms(instance=project, name='New Arm')
-        arm.save()
-
-        # Add cycles for arm 1
-        arm_cycles = ['standard', 'custom']
-        for cycle in arm_cycles:
-            cycle_type = CycleTypes.objects.get(type=cycle)
-            new_cycle = Cycles(instance=project, arm=arm, type=cycle_type, number_cycles=1, name=cycle_type.name)
-            new_cycle.save()
-
-        project = CTEffort.objects.get(cte_id=serializer.data['cte_id'])
-        cycles = project.cycles_set.all()
-        p_serializer = self.serializer_class(project, many=False)
-        c_serializer = CyclesSerializer(cycles, many=True)
-
-        pre_cycles = project.cycles_set.filter(type_id__in = [1, 2])
-        post_cycles = project.cycles_set.filter(type_id__in = [4, 5])
-        pre_cycles_serializer = CyclesSerializer(pre_cycles, many=True)
-        post_cycles_serializer = CyclesSerializer(post_cycles, many=True)
-
-        send_back = p_serializer.data
-
-        send_back['cycles'] = c_serializer.data
-        send_back['pre_cycles'] = pre_cycles_serializer.data
-        send_back['post_cycles'] = post_cycles_serializer.data
-        print(p_serializer.data)
-
-
-        return Response(send_back, status=200)
 
 
 # Cycle types Viewset
@@ -143,7 +127,7 @@ class TrialArmsViewSet(viewsets.ModelViewSet):
     ]
     queryset = TrialArms.objects.all()
     serializer_class = TrialArmsSerializer
-    lookup_field = 'request_id'
+    lookup_field = 'ta_id'
 
 
 # Clinical trial instance cycles Viewset
