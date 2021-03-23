@@ -129,6 +129,24 @@ class TrialArmsViewSet(viewsets.ModelViewSet):
     serializer_class = TrialArmsSerializer
     lookup_field = 'ta_id'
 
+    # @action(detail=False, methods=['GET'])
+    # def remove(self, request, ta_id=None):
+    #
+    #
+    #     # Save project
+    #     arm = self.queryset.filter(ta_id=ta_id)[0]
+    #     serializer = self.serializer_class(data=arm)
+    #     serializer.is_valid(raise_exception=True)
+    #     serializer.save()
+    #     serializer.is_valid(raise_exception=True)
+    #     serializer.delete()
+    #
+    #     project = CTEffort.objects.get(cte_id=proj_id)
+    #
+    #     p_serializer = CTEffortSerializer(project, many=False)
+    #
+    #     return Response(p_serializer, status=200)
+
 
 # Clinical trial instance cycles Viewset
 class CyclesViewSet(viewsets.ModelViewSet):
@@ -138,7 +156,7 @@ class CyclesViewSet(viewsets.ModelViewSet):
     ]
     queryset = Cycles.objects.all()
     serializer_class = CyclesSerializer
-    lookup_field = 'request_id'
+    lookup_field = 'c_id'
 
 
 # Clinical trial instance visits Viewset

@@ -21,18 +21,37 @@ class TrialArmsSerializer(serializers.ModelSerializer):
 # Clinical trial effort instance
 class CTEffortSerializer(serializers.ModelSerializer):
     #
+    cycles = serializers.SerializerMethodField()
     pre_cycles = serializers.SerializerMethodField()
     post_cycles = serializers.SerializerMethodField()
 
 
     # pre_cycles = CyclesSerializer(source='cycles_set', queryset=Cycles.objects.filter(type_id__in = [1, 2]), many=True, required=False)
     # post_cycles = CyclesSerializer(source='cycles_set', queryset=Cycles.objects.filter(type_id__in = [4, 5]), many=True, required=False)
-    cycles = CyclesSerializer(source='cycles_set', many=True, required=False)
+    # cycles = CyclesSerializer(source='cycles_set', many=True, required=False)
     arms = TrialArmsSerializer(source='trialarms_set', many=True, required=False)
 
     class Meta:
         model = CTEffort
         fields = '__all__'
+
+    def get_cycles(self, obj):
+        pre = obj.cycles_set.filter(type_id__in = [1, 2])
+        pre_s = CyclesSerializer(pre, many=True, required=False)
+        post = obj.cycles_set.filter(type_id__in = [4, 5])
+        post_s = CyclesSerializer(post, many=True, required=False)
+        arms = obj.trialarms_set
+        arms_s = TrialArmsSerializer(arms, many=True, required=False)
+        arm_cycles=[]
+        for arm in arms_s.data:
+            # print(arm["cycles"])
+            for cycle in arm["cycles"]:
+                arm_cycles.append(cycle)
+        cycles = pre_s.data + arm_cycles + post_s.data
+        if cycles:
+            return cycles
+        else:
+            return []
 
 
     def get_pre_cycles(self, obj):
