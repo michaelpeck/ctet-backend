@@ -11,7 +11,12 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
 from pathlib import Path
-from decouple import config
+import os
+# from decouple import config
+from decouple import Config, RepositoryEnv
+
+DOTENV_FILE = '/var/www/nbrbackend/.env'
+env_config = Config(RepositoryEnv(DOTENV_FILE))
 
 # import dj_database_url
 
@@ -23,10 +28,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = config('SECRET_KEY')
+SECRET_KEY = env_config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config('DEBUG', cast=bool, default=False)
+DEBUG = env_config('DEBUG', cast=bool, default=False)
+
+ALLOWED_HOSTS = ['.localhost']
 
 # Application definition
 
@@ -89,11 +96,11 @@ REST_FRAMEWORK = {
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': config('DB_NAME'),
-        'USER': config('DB_USER'),
-        'PASSWORD': config('DB_PASSWORD'),
-        'HOST': config('DB_HOST'),
-        'PORT': config('DB_PORT', default='')
+        'NAME': env_config('DB_NAME'),
+        'USER': env_config('DB_USER'),
+        'PASSWORD': env_config('DB_PASSWORD'),
+        'HOST': env_config('DB_HOST'),
+        'PORT': env_config('DB_PORT', default='')
     }
 }
 
@@ -135,22 +142,23 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 
 # Email settings
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = config('EMAIL_HOST')
-EMAIL_USE_SSL = config('EMAIL_USE_SSL', cast=bool, default=False)
-EMAIL_USE_TLS = config('EMAIL_USE_TLS', cast=bool, default=False)
-EMAIL_PORT = config('EMAIL_PORT', cast=int)
-EMAIL_HOST_USER = config('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
+EMAIL_HOST = env_config('EMAIL_HOST')
+EMAIL_USE_SSL = env_config('EMAIL_USE_SSL', cast=bool, default=False)
+EMAIL_USE_TLS = env_config('EMAIL_USE_TLS', cast=bool, default=False)
+EMAIL_PORT = env_config('EMAIL_PORT', cast=int)
+EMAIL_HOST_USER = env_config('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = env_config('EMAIL_HOST_PASSWORD')
 
 # HTTPS settings
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
-SECURE_SSL_REDIRECT = True
+# SESSION_COOKIE_SECURE = False
+# CSRF_COOKIE_SECURE = False
+# SECURE_SSL_REDIRECT = False
 
 # HSTS settings
-SECURE_HSTS_SECONDS = 31536000 # 1 year
-SECURE_HSTS_PRELOAD = True
-SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+# SECURE_HSTS_SECONDS = 31536000 # 1 year
+# SECURE_HSTS_PRELOAD = False
+# SECURE_HSTS_INCLUDE_SUBDOMAINS = False
