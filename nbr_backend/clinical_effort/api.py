@@ -42,7 +42,6 @@ class CTEffortViewSet(viewsets.ModelViewSet):
 
         project = CTEffort.objects.get(cte_id=cte_id)
         p_serializer = self.serializer_class(project, many=False)
-        print('I made it')
         print(p_serializer.data)
 
 
@@ -76,23 +75,9 @@ class CTEffortViewSet(viewsets.ModelViewSet):
             new_cycle.save()
 
         project = CTEffort.objects.get(cte_id=serializer.data['cte_id'])
-        cycles = project.cycles_set.all()
         p_serializer = self.serializer_class(project, many=False)
-        c_serializer = CyclesSerializer(cycles, many=True)
 
-        pre_cycles = project.cycles_set.filter(type_id__in = [1, 2])
-        post_cycles = project.cycles_set.filter(type_id__in = [4, 5])
-        pre_cycles_serializer = CyclesSerializer(pre_cycles, many=True)
-        post_cycles_serializer = CyclesSerializer(post_cycles, many=True)
-
-        send_back = p_serializer.data
-
-        send_back['cycles'] = c_serializer.data
-        send_back['pre_cycles'] = pre_cycles_serializer.data
-        send_back['post_cycles'] = post_cycles_serializer.data
-        print(p_serializer.data)
-
-        return Response(send_back, status=200)
+        return Response(p_serializer.data, status=200)
 
 
 

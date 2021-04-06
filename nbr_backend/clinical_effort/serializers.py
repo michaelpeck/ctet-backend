@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from clinical_effort.models import CTEffort, CycleTypes, PersonnelTypes, TrialArms, Cycles, Visits, Personnel, CRCVisit, NCVisit, DCVisit, GeneralVisit
+# from clinical_effort.models import Complexity, ComplexityValue, 
 
 # Clinical trial instance cycles
 class CyclesSerializer(serializers.ModelSerializer):
@@ -16,6 +17,23 @@ class TrialArmsSerializer(serializers.ModelSerializer):
     class Meta:
         model = TrialArms
         fields = '__all__'
+
+
+# Complexity value
+# class ComplexityValueSerializer(serializers.ModelSerializer):
+#
+#     class Meta:
+#         model = ComplexityValue
+#         fields = '__all__'
+#
+# # Complexity
+# class ComplexitySerializer(serializers.ModelSerializer):
+#
+#     values = ComplexityValueSerializer(source='complexityvalues_set', many=True, required=False)
+#
+#     class Meta:
+#         model = Complexity
+#         fields = '__all__'
 
 
 # Clinical trial effort instance
