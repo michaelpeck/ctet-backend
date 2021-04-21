@@ -10,8 +10,8 @@ import datetime
 
 # Clinical trial effort instance model
 class CTEffort(models.Model):
-    cte_id = models.AutoField(primary_key=True)
-    user_id = models.IntegerField(blank=True, null=True)
+    id = models.AutoField(primary_key=True)
+    user = models.IntegerField(blank=True, null=True)
     name = models.CharField(max_length=32, blank=True, null=True)
     estimated_accruals = models.IntegerField(blank=True, null=True)
     pi_effort = models.FloatField(blank=True, null=True)
@@ -28,7 +28,7 @@ class CTEffort(models.Model):
 
 # Cycle types model
 class CycleTypes(models.Model):
-    ct_id = models.AutoField(primary_key=True)
+    id = models.AutoField(primary_key=True)
     type = models.CharField(max_length=32, blank=True, null=True)
     name = models.CharField(max_length=32, blank=True, null=True)
 
@@ -39,7 +39,7 @@ class CycleTypes(models.Model):
 
 # Personnel types model
 class PersonnelTypes(models.Model):
-    pt_id = models.AutoField(primary_key=True)
+    id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=32, blank=True, null=True)
 
     class Meta:
@@ -60,7 +60,7 @@ class PersonnelTypes(models.Model):
 
 # Trial arms model
 class TrialArms(models.Model):
-    ta_id = models.AutoField(primary_key=True)
+    id = models.AutoField(primary_key=True)
     instance = models.ForeignKey('CTEffort',on_delete=models.CASCADE,)
     name = models.CharField(max_length=32, blank=True, null=True)
     updated = models.DateTimeField(auto_now=True)
@@ -72,7 +72,7 @@ class TrialArms(models.Model):
 
 # Cycles model
 class Cycles(models.Model):
-    c_id = models.AutoField(primary_key=True)
+    id = models.AutoField(primary_key=True)
     instance = models.ForeignKey('CTEffort',on_delete=models.CASCADE,)
     arm = models.ForeignKey('TrialArms',on_delete=models.CASCADE, null=True)
     type = models.ForeignKey('CycleTypes',on_delete=models.CASCADE,)
@@ -89,10 +89,11 @@ class Cycles(models.Model):
 
 # Visits model
 class Visits(models.Model):
-    v_id = models.AutoField(primary_key=True)
+    id = models.AutoField(primary_key=True)
     instance = models.ForeignKey('CTEffort',on_delete=models.CASCADE,)
-    arm = models.ForeignKey('TrialArms',on_delete=models.CASCADE, null=True)
     cycle = models.ForeignKey('Cycles',on_delete=models.CASCADE,)
+    cycle_number = models.IntegerField(blank=True, null=True)
+    visit_number = models.IntegerField(blank=True, null=True)
     updated = models.DateTimeField(auto_now=True)
     updated_by = models.IntegerField(blank=True, null=True)
 
@@ -103,7 +104,7 @@ class Visits(models.Model):
 
 # Personnel model
 class Personnel(models.Model):
-    p_id = models.AutoField(primary_key=True)
+    id = models.AutoField(primary_key=True)
     instance = models.ForeignKey('CTEffort',on_delete=models.CASCADE,)
     type = models.ForeignKey('PersonnelTypes',on_delete=models.CASCADE,)
     name = models.CharField(max_length=32, blank=True, null=True)
@@ -117,24 +118,25 @@ class Personnel(models.Model):
 
 # Clinical research coordinator visit model
 class CRCVisit(models.Model):
-    crc_id = models.AutoField(primary_key=True)
-    calendar_screen = models.FloatField(blank=True, null=True)
-    chart_review = models.FloatField(blank=True, null=True)
-    pre_cert = models.FloatField(blank=True, null=True)
-    consent = models.FloatField(blank=True, null=True)
-    eligibility_checklist = models.FloatField(blank=True, null=True)
-    registration = models.FloatField(blank=True, null=True)
-    ivrs_iwrs = models.FloatField(blank=True, null=True)
-    scheduling = models.FloatField(blank=True, null=True)
-    medical_history = models.FloatField(blank=True, null=True)
-    vitals = models.FloatField(blank=True, null=True)
-    lab_work = models.FloatField(blank=True, null=True)
-    imaging = models.FloatField(blank=True, null=True)
-    ecgs = models.FloatField(blank=True, null=True)
-    oral_medication = models.FloatField(blank=True, null=True)
-    clinic_notes = models.FloatField(blank=True, null=True)
-    billing = models.FloatField(blank=True, null=True)
-    crf_entry = models.FloatField(blank=True, null=True)
+    id = models.AutoField(primary_key=True)
+    visit = models.ForeignKey('Visits',on_delete=models.CASCADE,null=True)
+    calendar_screen = models.FloatField(blank=True, null=True, default=0)
+    chart_review = models.FloatField(blank=True, null=True, default=0)
+    pre_cert = models.FloatField(blank=True, null=True, default=0)
+    consent = models.FloatField(blank=True, null=True, default=0)
+    eligibility_checklist = models.FloatField(blank=True, null=True, default=0)
+    registration = models.FloatField(blank=True, null=True, default=0)
+    ivrs_iwrs = models.FloatField(blank=True, null=True, default=0)
+    scheduling = models.FloatField(blank=True, null=True, default=0)
+    medical_history = models.FloatField(blank=True, null=True, default=0)
+    vitals = models.FloatField(blank=True, null=True, default=0)
+    lab_work = models.FloatField(blank=True, null=True, default=0)
+    imaging = models.FloatField(blank=True, null=True, default=0)
+    ecgs = models.FloatField(blank=True, null=True, default=0)
+    oral_medication = models.FloatField(blank=True, null=True, default=0)
+    clinic_notes = models.FloatField(blank=True, null=True, default=0)
+    billing = models.FloatField(blank=True, null=True, default=0)
+    crf_entry = models.FloatField(blank=True, null=True, default=0)
 
     class Meta:
         managed = True
@@ -142,9 +144,10 @@ class CRCVisit(models.Model):
 
 # Nurse coordinator visit model
 class NCVisit(models.Model):
-    ncv_id = models.AutoField(primary_key=True)
-    infusion = models.FloatField(blank=True, null=True)
-    pk_samples = models.FloatField(blank=True, null=True)
+    id = models.AutoField(primary_key=True)
+    visit = models.ForeignKey('Visits',on_delete=models.CASCADE,null=True)
+    infusion = models.FloatField(blank=True, null=True, default=0)
+    pk_samples = models.FloatField(blank=True, null=True, default=0)
 
     class Meta:
         managed = True
@@ -153,9 +156,10 @@ class NCVisit(models.Model):
 
 # Data coordinator visit model
 class DCVisit(models.Model):
-    dcv_id = models.AutoField(primary_key=True)
-    infusion = models.FloatField(blank=True, null=True)
-    pk_samples = models.FloatField(blank=True, null=True)
+    id = models.AutoField(primary_key=True)
+    visit = models.ForeignKey('Visits',on_delete=models.CASCADE,null=True)
+    infusion = models.FloatField(blank=True, null=True, default=0)
+    pk_samples = models.FloatField(blank=True, null=True, default=0)
 
     class Meta:
         managed = True
@@ -164,13 +168,14 @@ class DCVisit(models.Model):
 
 # General visit model
 class GeneralVisit(models.Model):
-    gv_id = models.AutoField(primary_key=True)
-    training = models.FloatField(blank=True, null=True)
-    protocol_review = models.FloatField(blank=True, null=True)
-    source_document = models.FloatField(blank=True, null=True)
-    regulatory = models.FloatField(blank=True, null=True)
-    sponsor_meetings = models.FloatField(blank=True, null=True)
-    internal_meetings = models.FloatField(blank=True, null=True)
+    id = models.AutoField(primary_key=True)
+    visit = models.ForeignKey('Visits',on_delete=models.CASCADE,null=True)
+    training = models.FloatField(blank=True, null=True, default=0)
+    protocol_review = models.FloatField(blank=True, null=True, default=0)
+    source_document = models.FloatField(blank=True, null=True, default=0)
+    regulatory = models.FloatField(blank=True, null=True, default=0)
+    sponsor_meetings = models.FloatField(blank=True, null=True, default=0)
+    internal_meetings = models.FloatField(blank=True, null=True, default=0)
 
     class Meta:
         managed = True
