@@ -19,4 +19,10 @@ def add_visit(cycle_no, visit_no, proj_id=None, cycle_id=None):
     dc_visit = DCVisit(visit=new_visit)
     g_visit = GeneralVisit(visit=new_visit)
 
+    # Save visit types
+    crc_visit.save()
+    nc_visit.save()
+    dc_visit.save()
+    g_visit.save()
+
     return True

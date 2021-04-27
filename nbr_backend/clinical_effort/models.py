@@ -100,6 +100,7 @@ class Visits(models.Model):
     class Meta:
         managed = True
         db_table = 'visits'
+        ordering = ['cycle_number', 'visit_number']
 
 
 # Personnel model
@@ -120,23 +121,23 @@ class Personnel(models.Model):
 class CRCVisit(models.Model):
     id = models.AutoField(primary_key=True)
     visit = models.ForeignKey('Visits',on_delete=models.CASCADE,null=True)
-    calendar_screen = models.FloatField(blank=True, null=True, default=0)
-    chart_review = models.FloatField(blank=True, null=True, default=0)
-    pre_cert = models.FloatField(blank=True, null=True, default=0)
-    consent = models.FloatField(blank=True, null=True, default=0)
-    eligibility_checklist = models.FloatField(blank=True, null=True, default=0)
-    registration = models.FloatField(blank=True, null=True, default=0)
-    ivrs_iwrs = models.FloatField(blank=True, null=True, default=0)
-    scheduling = models.FloatField(blank=True, null=True, default=0)
-    medical_history = models.FloatField(blank=True, null=True, default=0)
-    vitals = models.FloatField(blank=True, null=True, default=0)
-    lab_work = models.FloatField(blank=True, null=True, default=0)
-    imaging = models.FloatField(blank=True, null=True, default=0)
-    ecgs = models.FloatField(blank=True, null=True, default=0)
-    oral_medication = models.FloatField(blank=True, null=True, default=0)
-    clinic_notes = models.FloatField(blank=True, null=True, default=0)
-    billing = models.FloatField(blank=True, null=True, default=0)
-    crf_entry = models.FloatField(blank=True, null=True, default=0)
+    calendar_screen = models.FloatField(blank=True, default=0)
+    chart_review = models.FloatField(blank=True, default=0)
+    pre_cert = models.FloatField(blank=True,  default=0)
+    consent = models.FloatField(blank=True, default=0)
+    eligibility_checklist = models.FloatField(blank=True, default=0)
+    registration = models.FloatField(blank=True, default=0)
+    ivrs_iwrs = models.FloatField(blank=True, default=0)
+    scheduling = models.FloatField(blank=True, default=0)
+    medical_history = models.FloatField(blank=True, default=0)
+    vitals = models.FloatField(blank=True, default=0)
+    lab_work = models.FloatField(blank=True, default=0)
+    imaging = models.FloatField(blank=True, default=0)
+    ecgs = models.FloatField(blank=True, default=0)
+    oral_medication = models.FloatField(blank=True, default=0)
+    clinic_notes = models.FloatField(blank=True, default=0)
+    billing = models.FloatField(blank=True, default=0)
+    crf_entry = models.FloatField(blank=True, default=0)
 
     class Meta:
         managed = True
@@ -146,8 +147,8 @@ class CRCVisit(models.Model):
 class NCVisit(models.Model):
     id = models.AutoField(primary_key=True)
     visit = models.ForeignKey('Visits',on_delete=models.CASCADE,null=True)
-    infusion = models.FloatField(blank=True, null=True, default=0)
-    pk_samples = models.FloatField(blank=True, null=True, default=0)
+    infusion = models.FloatField(blank=True, default=0)
+    pk_samples = models.FloatField(blank=True, default=0)
 
     class Meta:
         managed = True
@@ -158,8 +159,9 @@ class NCVisit(models.Model):
 class DCVisit(models.Model):
     id = models.AutoField(primary_key=True)
     visit = models.ForeignKey('Visits',on_delete=models.CASCADE,null=True)
-    infusion = models.FloatField(blank=True, null=True, default=0)
-    pk_samples = models.FloatField(blank=True, null=True, default=0)
+    crf_entry = models.FloatField(blank=True, default=0)
+    remote_monitor = models.FloatField(blank=True, default=0)
+    other = models.FloatField(blank=True, default=0)
 
     class Meta:
         managed = True
@@ -170,12 +172,12 @@ class DCVisit(models.Model):
 class GeneralVisit(models.Model):
     id = models.AutoField(primary_key=True)
     visit = models.ForeignKey('Visits',on_delete=models.CASCADE,null=True)
-    training = models.FloatField(blank=True, null=True, default=0)
-    protocol_review = models.FloatField(blank=True, null=True, default=0)
-    source_document = models.FloatField(blank=True, null=True, default=0)
-    regulatory = models.FloatField(blank=True, null=True, default=0)
-    sponsor_meetings = models.FloatField(blank=True, null=True, default=0)
-    internal_meetings = models.FloatField(blank=True, null=True, default=0)
+    training = models.FloatField(blank=True, default=0)
+    protocol_review = models.FloatField(blank=True, default=0)
+    source_document = models.FloatField(blank=True, default=0)
+    regulatory = models.FloatField(blank=True, default=0)
+    sponsor_meetings = models.FloatField(blank=True, default=0)
+    internal_meetings = models.FloatField(blank=True, default=0)
 
     class Meta:
         managed = True
