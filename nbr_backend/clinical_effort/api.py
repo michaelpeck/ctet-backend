@@ -11,12 +11,14 @@ import json
 import io
 import hashlib
 
+from clinical_effort.models import Complexity, ComplexityValue, ComplexityTypes
 from clinical_effort.models import CTEffort, CycleTypes, PersonnelTypes, TrialArms, Cycles, Visits, Personnel, CRCVisit, NCVisit, DCVisit, GeneralVisit
-from .serializers import CTEffortSerializer, CycleTypesSerializer, PersonnelTypesSerializer, TrialArmsSerializer, CyclesSerializer, VisitsSerializer, PersonnelSerializer, CRCVisitSerializer, NCVisitSerializer, DCVisitSerializer, GeneralVisitSerializer
+from .serializers import CTEffortSerializer, CycleTypesSerializer, PersonnelTypesSerializer, TrialArmsSerializer, CyclesSerializer, VisitsSerializer, PersonnelSerializer, CRCVisitSerializer, NCVisitSerializer, DCVisitSerializer, GeneralVisitSerializer, ComplexityValueSerializer, ComplexitySerializer, ComplexityTypesSerializer
 
 from clinical_effort.actions.project import setup_project
 from clinical_effort.actions.arms import add_arm
 from clinical_effort.actions.cycles import add_cycle, update_cycle
+from clinical_effort.actions.complexity import create_complexity
 
 # Clinical trial effort Viewset
 class CTEffortViewSet(viewsets.ModelViewSet):
@@ -39,6 +41,9 @@ class CTEffortViewSet(viewsets.ModelViewSet):
         # Call setup project action
         add_proj = setup_project(request.data, serializer.data['id'])
 
+        # Call setup complexity action
+        add_proj = create_complexity(serializer.data['id'])
+
         # Retrieve new project
         project = CTEffort.objects.get(id=serializer.data['id'])
         p_serializer = self.serializer_class(project, many=False)
@@ -58,6 +63,37 @@ class CTEffortViewSet(viewsets.ModelViewSet):
 
         return Response(p_serializer.data, status=200)
 
+
+# Complexity Viewset
+class ComplexityTypesViewSet(viewsets.ModelViewSet):
+
+    permission_classes = [
+        permissions.AllowAny,
+    ]
+    queryset = ComplexityTypes.objects.all()
+    serializer_class = ComplexityTypesSerializer
+    lookup_field = 'id'
+
+# Complexity Viewset
+class ComplexityViewSet(viewsets.ModelViewSet):
+
+    permission_classes = [
+        permissions.AllowAny,
+    ]
+    queryset = Complexity.objects.all()
+    serializer_class = ComplexitySerializer
+    lookup_field = 'id'
+
+
+# Complexity Types Viewset
+class ComplexityValueViewSet(viewsets.ModelViewSet):
+
+    permission_classes = [
+        permissions.AllowAny,
+    ]
+    queryset = ComplexityValue.objects.all()
+    serializer_class = ComplexityValueSerializer
+    lookup_field = 'id'
 
 
 

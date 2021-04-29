@@ -1,6 +1,37 @@
 from rest_framework import serializers
 from clinical_effort.models import CTEffort, CycleTypes, PersonnelTypes, TrialArms, Cycles, Visits, Personnel, CRCVisit, NCVisit, DCVisit, GeneralVisit
-# from clinical_effort.models import Complexity, ComplexityValue,
+from clinical_effort.models import Complexity, ComplexityValue, ComplexityTypes
+
+# Complexity value
+class ComplexityTypesSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = ComplexityTypes
+        fields = '__all__'
+
+# Complexity value
+class ComplexityValueSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = ComplexityValue
+        fields = '__all__'
+
+# Complexity
+class ComplexitySerializer(serializers.ModelSerializer):
+
+    values = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Complexity
+        fields = '__all__'
+
+    def get_values(self, obj):
+        vals = obj.complexityvalue_set
+        val_s = ComplexityValueSerializer(vals, many=True, required=False)
+        if val_s:
+            return val_s.data
+        else:
+            return []
 
 # Clinical research coordinator visits
 class CRCVisitSerializer(serializers.ModelSerializer):
@@ -100,20 +131,31 @@ class VisitsSerializer(serializers.ModelSerializer):
 
     def get_visits(self, obj):
         visits = {}
-        crc = CRCVisit.objects.get(visit=obj.id)
-        crc_s = CRCVisitSerializer(crc, many=False, required=False)
-        print(crc_s.data)
-        visits['crc'] = crc_s.data
-        nc = NCVisit.objects.get(visit=obj.id)
-        nc_s = NCVisitSerializer(nc, many=False, required=False)
-        visits['nc'] = nc_s.data
-        dc = DCVisit.objects.get(visit=obj.id)
-        dc_s = DCVisitSerializer(dc, many=False, required=False)
-        visits['dc'] = dc_s.data
-        ls = GeneralVisit.objects.get(visit=obj.id)
-        ls_s = GeneralVisitSerializer(ls, many=False, required=False)
-        visits['ls'] = ls_s.data
-        print(ls_s.data)
+        if CRCVisit.objects.filter(visit=obj.id).exists():
+            crc_s = CRCVisitSerializer(CRCVisit.objects.get(visit=obj.id), many=False, required=False)
+            visits['crc'] = crc_s.data
+        else:
+            visits['crc'] = {}
+
+        if NCVisit.objects.filter(visit=obj.id).exists():
+            nc_s = NCVisitSerializer(NCVisit.objects.get(visit=obj.id), many=False, required=False)
+            visits['nc'] = nc_s.data
+        else:
+            visits['nc'] = {}
+
+        if DCVisit.objects.filter(visit=obj.id).exists():
+            dc_s = DCVisitSerializer(DCVisit.objects.get(visit=obj.id), many=False, required=False)
+            visits['dc'] = dc_s.data
+        else:
+            visits['dc'] = {}
+
+        if GeneralVisit.objects.filter(visit=obj.id).exists():
+            ls_s = GeneralVisitSerializer(GeneralVisit.objects.get(visit=obj.id), many=False, required=False)
+            visits['ls'] = ls_s.data
+        else:
+            visits['ls'] = {}
+
+
         return visits
 
 
@@ -144,21 +186,6 @@ class TrialArmsSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-# Complexity value
-# class ComplexityValueSerializer(serializers.ModelSerializer):
-#
-#     class Meta:
-#         model = ComplexityValue
-#         fields = '__all__'
-#
-# # Complexity
-# class ComplexitySerializer(serializers.ModelSerializer):
-#
-#     values = ComplexityValueSerializer(source='complexityvalues_set', many=True, required=False)
-#
-#     class Meta:
-#         model = Complexity
-#         fields = '__all__'
 
 
 # Clinical trial effort instance
@@ -167,6 +194,7 @@ class CTEffortSerializer(serializers.ModelSerializer):
     cycles = serializers.SerializerMethodField()
     pre_cycles = serializers.SerializerMethodField()
     post_cycles = serializers.SerializerMethodField()
+    complexity = serializers.SerializerMethodField()
 
 
     # pre_cycles = CyclesSerializer(source='cycles_set', queryset=Cycles.objects.filter(type_id__in = [1, 2]), many=True, required=False)
@@ -210,6 +238,13 @@ class CTEffortSerializer(serializers.ModelSerializer):
         cycles_s = CyclesSerializer(cycles, many=True, required=False)
         if cycles_s:
             return cycles_s.data
+        else:
+            return []
+
+    def get_complexity(self, obj):
+        if Complexity.objects.filter(instance=obj.id).exists():
+            complex_s = ComplexitySerializer(Complexity.objects.get(instance=obj.id), many=False, required=False)
+            return complex_s.data
         else:
             return []
 

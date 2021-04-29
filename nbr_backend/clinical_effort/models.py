@@ -48,14 +48,20 @@ class PersonnelTypes(models.Model):
 
 
 # Complexity types model
-# class ComplexityTypes(models.Model):
-#     id = models.AutoField(primary_key=True)
-#     type = models.CharField(max_length=32, blank=True, null=True)
-#     name = models.CharField(max_length=32, blank=True, null=True)
-#
-#     class Meta:
-#         managed = True
-#         db_table = 'complexity_types'
+class ComplexityTypes(models.Model):
+    id = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=128, blank=True, null=True)
+    description = models.CharField(max_length=256, blank=True, null=True)
+    zero = models.CharField(max_length=128, blank=True, null=True)
+    one = models.CharField(max_length=128, blank=True, null=True)
+    two = models.CharField(max_length=128, blank=True, null=True)
+    three = models.CharField(max_length=128, blank=True, null=True)
+    three = models.CharField(max_length=128, blank=True, null=True)
+    weight = models.FloatField(blank=True, default=0)
+
+    class Meta:
+        managed = True
+        db_table = 'complexity_types'
 
 
 # Trial arms model
@@ -185,24 +191,24 @@ class GeneralVisit(models.Model):
 
 
 # Complexity model
-# class Complexity(models.Model):
-#     id = models.AutoField(primary_key=True)
-#     instance = models.ForeignKey('CTEffort',on_delete=models.CASCADE,)
-#
-#
-#     class Meta:
-#         managed = True
-#         db_table = 'g_visit'
+class Complexity(models.Model):
+    id = models.AutoField(primary_key=True)
+    instance = models.ForeignKey('CTEffort',on_delete=models.CASCADE,)
+
+
+    class Meta:
+        managed = True
+        db_table = 'complexity'
 
 
 # Complexity value model
-# class ComplexityValue(models.Model):
-#     id = models.AutoField(primary_key=True)
-#     complexity = models.ForeignKey('Complexity',on_delete=models.CASCADE,)
-#     type = models.ForeignKey('ComplexityTypes',on_delete=models.CASCADE,)
-#     value = models.IntegerField(blank=True, null=True, default=0, min_value=0, max_value=3)
-#
-#
-#     class Meta:
-#         managed = True
-#         db_table = 'g_visit'
+class ComplexityValue(models.Model):
+    id = models.AutoField(primary_key=True)
+    complexity = models.ForeignKey('Complexity',on_delete=models.CASCADE,)
+    type = models.ForeignKey('ComplexityTypes',on_delete=models.CASCADE,)
+    value = models.IntegerField(blank=True, null=True, default=0)
+
+
+    class Meta:
+        managed = True
+        db_table = 'complexity_value'

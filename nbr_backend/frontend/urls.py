@@ -7,4 +7,6 @@ urlpatterns = [
     path('', views.index),
     re_path('effort', views.index),
     re_path('effort/', views.index),
+    re_path('projects', views.index),
+    re_path('projects/', views.index),
 ]
