@@ -12,8 +12,8 @@ import io
 import hashlib
 
 from clinical_effort.models import Complexity, ComplexityValue, ComplexityTypes
-from clinical_effort.models import CTEffort, CycleTypes, PersonnelTypes, TrialArms, Cycles, Visits, Personnel, CRCVisit, NCVisit, DCVisit, GeneralVisit
-from .serializers import CTEffortSerializer, CycleTypesSerializer, PersonnelTypesSerializer, TrialArmsSerializer, CyclesSerializer, VisitsSerializer, PersonnelSerializer, CRCVisitSerializer, NCVisitSerializer, DCVisitSerializer, GeneralVisitSerializer, ComplexityValueSerializer, ComplexitySerializer, ComplexityTypesSerializer
+from clinical_effort.models import CTEffort, CycleTypes, PersonnelTypes, TrialArms, Cycles, Visits, Personnel
+from .serializers import CTEffortSerializer, CycleTypesSerializer, PersonnelTypesSerializer, TrialArmsSerializer, CyclesSerializer, VisitsSerializer, PersonnelSerializer, ComplexityValueSerializer, ComplexitySerializer, ComplexityTypesSerializer
 
 from clinical_effort.actions.project import setup_project
 from clinical_effort.actions.arms import add_arm
@@ -203,48 +203,4 @@ class PersonnelViewSet(viewsets.ModelViewSet):
     ]
     queryset = Personnel.objects.all()
     serializer_class = PersonnelSerializer
-    lookup_field = 'id'
-
-
-# Clinical research coordinator visits Viewset
-class CRCVisitViewSet(viewsets.ModelViewSet):
-
-    permission_classes = [
-        permissions.AllowAny,
-    ]
-    queryset = CRCVisit.objects.all()
-    serializer_class = CRCVisitSerializer
-    lookup_field = 'id'
-
-
-# Nurse coordinator visits Viewset
-class NCVisitViewSet(viewsets.ModelViewSet):
-
-    permission_classes = [
-        permissions.AllowAny,
-    ]
-    queryset = NCVisit.objects.all()
-    serializer_class = NCVisitSerializer
-    lookup_field = 'id'
-
-
-# Data coordinator visits Viewset
-class DCVisitViewSet(viewsets.ModelViewSet):
-
-    permission_classes = [
-        permissions.AllowAny,
-    ]
-    queryset = DCVisit.objects.all()
-    serializer_class = DCVisitSerializer
-    lookup_field = 'id'
-
-
-# General visit Viewset
-class GeneralVisitViewSet(viewsets.ModelViewSet):
-
-    permission_classes = [
-        permissions.AllowAny,
-    ]
-    queryset = GeneralVisit.objects.all()
-    serializer_class = GeneralVisitSerializer
     lookup_field = 'id'

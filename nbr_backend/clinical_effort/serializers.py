@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from clinical_effort.models import CTEffort, CycleTypes, PersonnelTypes, TrialArms, Cycles, Visits, Personnel, CRCVisit, NCVisit, DCVisit, GeneralVisit
+from clinical_effort.models import CTEffort, CycleTypes, PersonnelTypes, TrialArms, Cycles, Visits, Personnel
 from clinical_effort.models import Complexity, ComplexityValue, ComplexityTypes
 
 # Complexity value
@@ -33,92 +33,12 @@ class ComplexitySerializer(serializers.ModelSerializer):
         else:
             return []
 
-# Clinical research coordinator visits
-class CRCVisitSerializer(serializers.ModelSerializer):
-
-    # values = serializers.SerializerMethodField()
+# Personnel
+class PersonnelSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = CRCVisit
+        model = Personnel
         fields = '__all__'
-
-    # def get_values(self, obj):
-    #     vals = []
-    #     vals.append(self.calendar_screen)
-    #     vals.append(self.chart_review)
-    #     vals.append(self.pre_cert)
-    #     vals.append(self.consent)
-    #     vals.append(self.eligibility_checklist)
-    #     vals.append(self.registration)
-    #     vals.append(self.ivrs_iwrs)
-    #     vals.append(self.scheduling)
-    #     vals.append(self.medical_history)
-    #     vals.append(self.vitals)
-    #     vals.append(self.lab_work)
-    #     vals.append(self.imaging)
-    #     vals.append(self.ecgs)
-    #     vals.append(self.oral_medication)
-    #     vals.append(self.clinic_notes)
-    #     vals.append(self.billing)
-    #     vals.append(self.crf_entry)
-    #
-    #     return vals
-
-
-# Nurse coordinator visits
-class NCVisitSerializer(serializers.ModelSerializer):
-
-    # values = serializers.SerializerMethodField()
-
-    class Meta:
-        model = NCVisit
-        fields = '__all__'
-
-    # def get_values(self, obj):
-    #     vals = []
-    #     vals.append(self.infusion)
-    #     vals.append(self.pk_samples)
-    #
-    #     return vals
-
-
-# Data coordinator visits
-class DCVisitSerializer(serializers.ModelSerializer):
-
-    # values = serializers.SerializerMethodField()
-
-    class Meta:
-        model = DCVisit
-        fields = '__all__'
-
-    # def get_values(self, obj):
-    #     vals = []
-    #     vals.append(self.crf_entry)
-    #     vals.append(self.remote_monitor)
-    #     vals.append(self.other)
-    #
-    #     return vals
-
-
-# General visit
-class GeneralVisitSerializer(serializers.ModelSerializer):
-
-    # values = serializers.SerializerMethodField()
-
-    class Meta:
-        model = GeneralVisit
-        fields = '__all__'
-
-    # def get_values(self, obj):
-    #     vals = []
-    #     vals.append(self.training)
-    #     vals.append(self.protocol_review)
-    #     vals.append(self.source_document)
-    #     vals.append(self.regulatory)
-    #     vals.append(self.sponsor_meetings)
-    #     vals.append(self.internal_meetings)
-
-        # return vals
 
 # Clinical trial instance visits
 class VisitsSerializer(serializers.ModelSerializer):
@@ -131,29 +51,32 @@ class VisitsSerializer(serializers.ModelSerializer):
 
     def get_visits(self, obj):
         visits = {}
-        if CRCVisit.objects.filter(visit=obj.id).exists():
-            crc_s = CRCVisitSerializer(CRCVisit.objects.get(visit=obj.id), many=False, required=False)
-            visits['crc'] = crc_s.data
-        else:
-            visits['crc'] = {}
-
-        if NCVisit.objects.filter(visit=obj.id).exists():
-            nc_s = NCVisitSerializer(NCVisit.objects.get(visit=obj.id), many=False, required=False)
-            visits['nc'] = nc_s.data
-        else:
-            visits['nc'] = {}
-
-        if DCVisit.objects.filter(visit=obj.id).exists():
-            dc_s = DCVisitSerializer(DCVisit.objects.get(visit=obj.id), many=False, required=False)
-            visits['dc'] = dc_s.data
-        else:
-            visits['dc'] = {}
-
-        if GeneralVisit.objects.filter(visit=obj.id).exists():
-            ls_s = GeneralVisitSerializer(GeneralVisit.objects.get(visit=obj.id), many=False, required=False)
-            visits['ls'] = ls_s.data
-        else:
-            visits['ls'] = {}
+        people = obj.instance.personnel_set.all()
+        # for person in people:
+        #     fields
+        #     if VisitValue.objects.filter(visit=obj.id, ).exists():
+        #         crc_s = CRCVisitSerializer(CRCVisit.objects.get(visit=obj.id), many=False, required=False)
+        #         visits['crc'] = crc_s.data
+        #     else:
+        #         visits['crc'] = {}
+        #
+        # if NCVisit.objects.filter(visit=obj.id).exists():
+        #     nc_s = NCVisitSerializer(NCVisit.objects.get(visit=obj.id), many=False, required=False)
+        #     visits['nc'] = nc_s.data
+        # else:
+        #     visits['nc'] = {}
+        #
+        # if DCVisit.objects.filter(visit=obj.id).exists():
+        #     dc_s = DCVisitSerializer(DCVisit.objects.get(visit=obj.id), many=False, required=False)
+        #     visits['dc'] = dc_s.data
+        # else:
+        #     visits['dc'] = {}
+        #
+        # if GeneralVisit.objects.filter(visit=obj.id).exists():
+        #     ls_s = GeneralVisitSerializer(GeneralVisit.objects.get(visit=obj.id), many=False, required=False)
+        #     visits['ls'] = ls_s.data
+        # else:
+        #     visits['ls'] = {}
 
 
         return visits
@@ -201,6 +124,7 @@ class CTEffortSerializer(serializers.ModelSerializer):
     # post_cycles = CyclesSerializer(source='cycles_set', queryset=Cycles.objects.filter(type_id__in = [4, 5]), many=True, required=False)
     # cycles = CyclesSerializer(source='cycles_set', many=True, required=False)
     arms = TrialArmsSerializer(source='trialarms_set', many=True, required=False)
+    people = PersonnelSerializer(source='personnel_set', many=True, required=False)
 
     class Meta:
         model = CTEffort
@@ -263,46 +187,4 @@ class PersonnelTypesSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = PersonnelTypes
-        fields = '__all__'
-
-
-
-
-
-# Personnel
-class PersonnelSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Personnel
-        fields = '__all__'
-
-# Clinical research coordinator visits
-class CRCVisitSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = CRCVisit
-        fields = '__all__'
-
-
-# Nurse coordinator visits
-class NCVisitSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = NCVisit
-        fields = '__all__'
-
-
-# Data coordinator visits
-class DCVisitSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = DCVisit
-        fields = '__all__'
-
-
-# General visit
-class GeneralVisitSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = GeneralVisit
         fields = '__all__'

@@ -1,6 +1,10 @@
-from clinical_effort.models import CTEffort, Cycles, Visits, CRCVisit, NCVisit, DCVisit, GeneralVisit
+from clinical_effort.models import CTEffort, Cycles, Visits, VisitValue
 
-from ..serializers import TrialArmsSerializer
+# Add value
+def add_value():
+
+    return True
+
 
 # Add visit
 def add_visit(cycle_no, visit_no, proj_id=None, cycle_id=None):
@@ -13,16 +17,12 @@ def add_visit(cycle_no, visit_no, proj_id=None, cycle_id=None):
     new_visit = Visits(instance=project, cycle=cycle, cycle_number=cycle_no, visit_number=visit_no)
     new_visit.save()
 
-    # Add visit types
-    crc_visit = CRCVisit(visit=new_visit)
-    nc_visit = NCVisit(visit=new_visit)
-    dc_visit = DCVisit(visit=new_visit)
-    g_visit = GeneralVisit(visit=new_visit)
+    # Add initial values
+    for person in project.personnel_set.all():
+        fields = person.personnelfield_set.all()
+        for field in fields:
+            new_val = VisitValue(field=field, visit=new_visit, value=0)
+            new_val.save()
 
-    # Save visit types
-    crc_visit.save()
-    nc_visit.save()
-    dc_visit.save()
-    g_visit.save()
 
     return True

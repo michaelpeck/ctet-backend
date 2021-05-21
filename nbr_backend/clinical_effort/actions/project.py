@@ -4,12 +4,16 @@ from ..serializers import CTEffortSerializer
 
 from .arms import add_arm
 from .cycles import add_cycle
+from .person import add_default_people
 
 # Create new project
 def setup_project(object, id=None):
 
     # Get project
     project = CTEffort.objects.get(id=id)
+
+    # Add people
+    add_default_people(id)
 
     # Create project pre cycles
     pre_cycles = ['pre-screening', 'screening']
