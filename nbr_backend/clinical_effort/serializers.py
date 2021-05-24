@@ -52,13 +52,18 @@ class VisitsSerializer(serializers.ModelSerializer):
     def get_visits(self, obj):
         visits = {}
         people = obj.instance.personnel_set.all()
-        # for person in people:
-        #     fields
-        #     if VisitValue.objects.filter(visit=obj.id, ).exists():
-        #         crc_s = CRCVisitSerializer(CRCVisit.objects.get(visit=obj.id), many=False, required=False)
-        #         visits['crc'] = crc_s.data
-        #     else:
-        #         visits['crc'] = {}
+        for person in people:
+            # Get fields for person
+            new_vis = []
+            # Loop through firlds and assemble visit
+            for fields in fields:
+
+                if VisitValue.objects.filter(visit=obj.id, field=field).exists():
+                    crc_s = CRCVisitSerializer(CRCVisit.objects.get(visit=obj.id, field=field), many=False, required=True)
+                    new_vis.push(crc_s)
+
+            visits[person.id] = new_vis
+
         #
         # if NCVisit.objects.filter(visit=obj.id).exists():
         #     nc_s = NCVisitSerializer(NCVisit.objects.get(visit=obj.id), many=False, required=False)
@@ -66,17 +71,6 @@ class VisitsSerializer(serializers.ModelSerializer):
         # else:
         #     visits['nc'] = {}
         #
-        # if DCVisit.objects.filter(visit=obj.id).exists():
-        #     dc_s = DCVisitSerializer(DCVisit.objects.get(visit=obj.id), many=False, required=False)
-        #     visits['dc'] = dc_s.data
-        # else:
-        #     visits['dc'] = {}
-        #
-        # if GeneralVisit.objects.filter(visit=obj.id).exists():
-        #     ls_s = GeneralVisitSerializer(GeneralVisit.objects.get(visit=obj.id), many=False, required=False)
-        #     visits['ls'] = ls_s.data
-        # else:
-        #     visits['ls'] = {}
 
 
         return visits
@@ -120,9 +114,6 @@ class CTEffortSerializer(serializers.ModelSerializer):
     complexity = serializers.SerializerMethodField()
 
 
-    # pre_cycles = CyclesSerializer(source='cycles_set', queryset=Cycles.objects.filter(type_id__in = [1, 2]), many=True, required=False)
-    # post_cycles = CyclesSerializer(source='cycles_set', queryset=Cycles.objects.filter(type_id__in = [4, 5]), many=True, required=False)
-    # cycles = CyclesSerializer(source='cycles_set', many=True, required=False)
     arms = TrialArmsSerializer(source='trialarms_set', many=True, required=False)
     people = PersonnelSerializer(source='personnel_set', many=True, required=False)
 
