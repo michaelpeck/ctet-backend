@@ -1,0 +1,12 @@
+Hi there, \n
+One of your projects just received a status change. \n\n
+
+Project: {{ title }}  \n
+PI: {{ pi }} \n
+RSP ID: {{ rsp_id }}  \n
+Committee: {{ committee }} \n
+New Status: {{ new_status }} \n
+Comment by: {{ commented_by }} \n
+Date: {{ date }} \n
+
+\n\nComments: {{ comments }} \n
