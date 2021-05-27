@@ -1,5 +1,4 @@
 from django.db.models import Q
-from django.core.mail import send_mail, EmailMultiAlternatives
 from django.template.loader import get_template
 from django.conf import settings
 
@@ -12,8 +11,15 @@ import json
 import io
 import hashlib
 
-from clinical_effort.models import CTEffort, CycleTypes, PersonnelTypes, TrialArms, Cycles, Visits, Personnel, CRCVisit, NCVisit, DCVisit, GeneralVisit
-from .serializers import CTEffortSerializer, CycleTypesSerializer, PersonnelTypesSerializer, TrialArmsSerializer, CyclesSerializer, VisitsSerializer, PersonnelSerializer, CRCVisitSerializer, NCVisitSerializer, DCVisitSerializer, GeneralVisitSerializer
+from clinical_effort.models import Complexity, ComplexityValue, ComplexityTypes
+from clinical_effort.models import CTEffort, CycleTypes, PersonnelTypes, TrialArms, Cycles, Visits, Personnel
+from .serializers import CTEffortSerializer, CycleTypesSerializer, PersonnelTypesSerializer, TrialArmsSerializer, CyclesSerializer, VisitsSerializer, PersonnelSerializer, ComplexityValueSerializer, ComplexitySerializer, ComplexityTypesSerializer
+
+from clinical_effort.actions.project import setup_project
+from clinical_effort.actions.people import add_person, update_person
+from clinical_effort.actions.arms import add_arm
+from clinical_effort.actions.cycles import add_cycle, update_cycle
+from clinical_effort.actions.complexity import create_complexity
 
 # Clinical trial effort Viewset
 class CTEffortViewSet(viewsets.ModelViewSet):
@@ -23,94 +29,85 @@ class CTEffortViewSet(viewsets.ModelViewSet):
     ]
     queryset = CTEffort.objects.all()
     serializer_class = CTEffortSerializer
-    lookup_field = 'cte_id'
+    lookup_field = 'id'
 
     @action(detail=False, methods=['PUT'])
-    def new(self, request, cte_id=None):
+    def new(self, request, id=None):
 
         # Save project
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        print(serializer.data)
 
-        project = CTEffort.objects.get(cte_id=serializer.data['cte_id'])
+        # Call setup project action
+        add_proj = setup_project(request.data, serializer.data['id'])
 
+        # Call setup complexity action
+        add_proj = create_complexity(serializer.data['id'])
 
-        # Create general project cycles
-        standard_cycles = ['pre-screening', 'screening', 'end-of-treatment', 'follow-up']
-        for cycle in standard_cycles:
-            cycle_type = CycleTypes.objects.get(type=cycle)
-            new_cycle = Cycles(instance=project, type=cycle_type, number_cycles=1, name=cycle_type.name)
-            new_cycle.save()
-
-        # Create 1 arm
-        arm_1 = TrialArms(instance=project, name='Arm 1')
-        arm_1.save()
-        print(arm_1)
-
-        # Add cycles for arm 1
-        arm_cycles = ['standard', 'custom']
-        for cycle in arm_cycles:
-            cycle_type = CycleTypes.objects.get(type=cycle)
-            new_cycle = Cycles(instance=project, arm=arm_1, type=cycle_type, number_cycles=1, name=cycle_type.name)
-            new_cycle.save()
-
-        project = CTEffort.objects.get(cte_id=serializer.data['cte_id'])
-        cycles = project.cycles_set.all()
+        # Retrieve new project
+        project = CTEffort.objects.get(id=serializer.data['id'])
         p_serializer = self.serializer_class(project, many=False)
-        c_serializer = CyclesSerializer(cycles, many=True)
 
-        pre_cycles = project.cycles_set.filter(type_id__in = [1, 2])
-        post_cycles = project.cycles_set.filter(type_id__in = [4, 5])
-        pre_cycles_serializer = CyclesSerializer(pre_cycles, many=True)
-        post_cycles_serializer = CyclesSerializer(post_cycles, many=True)
-
-        send_back = p_serializer.data
-
-        send_back['cycles'] = c_serializer.data
-        send_back['pre_cycles'] = pre_cycles_serializer.data
-        send_back['post_cycles'] = post_cycles_serializer.data
-        print(p_serializer.data)
+        return Response(p_serializer.data, status=200)
 
 
-        return Response(send_back, status=200)
-
-    action(detail=False, methods=['PUT'])
-    def add_arm(self, request, cte_id=None):
-
-        project = CTEffort.objects.get(cte_id=cte_id)
+    @action(detail=True, methods=['GET'])
+    def add_arm(self, request, id=None):
 
         # Create arm
-        arm = TrialArms(instance=project, name='New Arm')
-        arm.save()
+        arm = add_arm(name='New Arm', proj_id=id)
 
-        # Add cycles for arm 1
-        arm_cycles = ['standard', 'custom']
-        for cycle in arm_cycles:
-            cycle_type = CycleTypes.objects.get(type=cycle)
-            new_cycle = Cycles(instance=project, arm=arm, type=cycle_type, number_cycles=1, name=cycle_type.name)
-            new_cycle.save()
-
-        project = CTEffort.objects.get(cte_id=serializer.data['cte_id'])
-        cycles = project.cycles_set.all()
+        # Retrieve updated project
+        project = CTEffort.objects.get(id=id)
         p_serializer = self.serializer_class(project, many=False)
-        c_serializer = CyclesSerializer(cycles, many=True)
 
-        pre_cycles = project.cycles_set.filter(type_id__in = [1, 2])
-        post_cycles = project.cycles_set.filter(type_id__in = [4, 5])
-        pre_cycles_serializer = CyclesSerializer(pre_cycles, many=True)
-        post_cycles_serializer = CyclesSerializer(post_cycles, many=True)
+        return Response(p_serializer.data, status=200)
 
-        send_back = p_serializer.data
+    @action(detail=True, methods=['GET'])
+    def add_person(self, request, id=None):
 
-        send_back['cycles'] = c_serializer.data
-        send_back['pre_cycles'] = pre_cycles_serializer.data
-        send_back['post_cycles'] = post_cycles_serializer.data
-        print(p_serializer.data)
+        # Create arm
+        person = add_person(proj_id=id, type_id=5, amount=1)
+
+        # Retrieve updated project
+        project = CTEffort.objects.get(id=id)
+        p_serializer = self.serializer_class(project, many=False)
+
+        return Response(p_serializer.data, status=200)
 
 
-        return Response(send_back, status=200)
+# Complexity Viewset
+class ComplexityTypesViewSet(viewsets.ModelViewSet):
+
+    permission_classes = [
+        permissions.AllowAny,
+    ]
+    queryset = ComplexityTypes.objects.all()
+    serializer_class = ComplexityTypesSerializer
+    lookup_field = 'id'
+
+# Complexity Viewset
+class ComplexityViewSet(viewsets.ModelViewSet):
+
+    permission_classes = [
+        permissions.AllowAny,
+    ]
+    queryset = Complexity.objects.all()
+    serializer_class = ComplexitySerializer
+    lookup_field = 'id'
+
+
+# Complexity Types Viewset
+class ComplexityValueViewSet(viewsets.ModelViewSet):
+
+    permission_classes = [
+        permissions.AllowAny,
+    ]
+    queryset = ComplexityValue.objects.all()
+    serializer_class = ComplexityValueSerializer
+    lookup_field = 'id'
+
 
 
 # Cycle types Viewset
@@ -121,7 +118,7 @@ class CycleTypesViewSet(viewsets.ModelViewSet):
     ]
     queryset = CycleTypes.objects.all()
     serializer_class = CycleTypesSerializer
-    lookup_field = 'request_id'
+    lookup_field = 'id'
 
 
 # Personnel types Viewset
@@ -132,7 +129,7 @@ class PersonnelTypesViewSet(viewsets.ModelViewSet):
     ]
     queryset = PersonnelTypes.objects.all()
     serializer_class = PersonnelTypesSerializer
-    lookup_field = 'request_id'
+    lookup_field = 'id'
 
 
 # Clinical trial instance arms Viewset
@@ -143,7 +140,33 @@ class TrialArmsViewSet(viewsets.ModelViewSet):
     ]
     queryset = TrialArms.objects.all()
     serializer_class = TrialArmsSerializer
-    lookup_field = 'request_id'
+    lookup_field = 'id'
+
+    @action(detail=True, methods=['GET'])
+    def add_cycle(self, request, id=None):
+
+        # Get project
+        arm = TrialArms.objects.filter(id=id)
+        proj_id = arm[0].instance
+        print(proj_id.id)
+
+        # Create arm
+        cycle = add_cycle(type='custom', proj_id=proj_id.id, arm_id=id)
+
+        # Retrieve updated project
+        project = CTEffort.objects.get(id=proj_id.id)
+        p_serializer = CTEffortSerializer(project, many=False)
+
+        return Response(p_serializer.data, status=200)
+        # return Response('yo', status=200)
+
+    @action(detail=False, methods=['GET'])
+    def new_cycle(self, request, id=None):
+        arm = self.queryset.filter(id=id)[0]
+        add_cycle(type='custom', proj_id=arm.instance, arm_id=id)
+
+        return Response('Worked', status=200)
+
 
 
 # Clinical trial instance cycles Viewset
@@ -154,7 +177,24 @@ class CyclesViewSet(viewsets.ModelViewSet):
     ]
     queryset = Cycles.objects.all()
     serializer_class = CyclesSerializer
-    lookup_field = 'request_id'
+    lookup_field = 'id'
+
+    @action(detail=True, methods=['PUT'])
+    def cycle_update(self, request, id=None):
+
+        # Get project
+        cycle = Cycles.objects.filter(id=id)
+        proj_id = cycle[0].instance
+        print(proj_id.id)
+
+        # Create arm
+        cycle = update_cycle(object=request.data, proj_id=proj_id.id, cycle_id=id)
+
+        # Retrieve updated project
+        project = CTEffort.objects.get(id=proj_id.id)
+        p_serializer = CTEffortSerializer(project, many=False)
+
+        return Response(p_serializer.data, status=200)
 
 
 # Clinical trial instance visits Viewset
@@ -165,7 +205,7 @@ class VisitsViewSet(viewsets.ModelViewSet):
     ]
     queryset = Visits.objects.all()
     serializer_class = VisitsSerializer
-    lookup_field = 'request_id'
+    lookup_field = 'id'
 
 
 # Personnel Viewset
@@ -176,48 +216,21 @@ class PersonnelViewSet(viewsets.ModelViewSet):
     ]
     queryset = Personnel.objects.all()
     serializer_class = PersonnelSerializer
-    lookup_field = 'request_id'
+    lookup_field = 'id'
 
+    @action(detail=True, methods=['PUT'])
+    def person_update(self, request, id=None):
 
-# Clinical research coordinator visits Viewset
-class CRCVisitViewSet(viewsets.ModelViewSet):
+        # Get project
+        person = Personnel.objects.filter(id=id)
+        proj_id = person[0].instance
+        print(proj_id.id)
 
-    permission_classes = [
-        permissions.AllowAny,
-    ]
-    queryset = CRCVisit.objects.all()
-    serializer_class = CRCVisitSerializer
-    lookup_field = 'request_id'
+        # Run person update function
+        new_person = update_person(object=request.data, proj_id=proj_id.id, person_id=id)
 
+        # Retrieve updated project
+        project = CTEffort.objects.get(id=proj_id.id)
+        p_serializer = CTEffortSerializer(project, many=False)
 
-# Nurse coordinator visits Viewset
-class NCVisitViewSet(viewsets.ModelViewSet):
-
-    permission_classes = [
-        permissions.AllowAny,
-    ]
-    queryset = NCVisit.objects.all()
-    serializer_class = NCVisitSerializer
-    lookup_field = 'request_id'
-
-
-# Data coordinator visits Viewset
-class DCVisitViewSet(viewsets.ModelViewSet):
-
-    permission_classes = [
-        permissions.AllowAny,
-    ]
-    queryset = DCVisit.objects.all()
-    serializer_class = DCVisitSerializer
-    lookup_field = 'request_id'
-
-
-# General visit Viewset
-class GeneralVisitViewSet(viewsets.ModelViewSet):
-
-    permission_classes = [
-        permissions.AllowAny,
-    ]
-    queryset = GeneralVisit.objects.all()
-    serializer_class = GeneralVisitSerializer
-    lookup_field = 'request_id'
+        return Response(p_serializer.data, status=200)

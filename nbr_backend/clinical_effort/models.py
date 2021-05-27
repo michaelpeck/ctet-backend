@@ -8,14 +8,13 @@ from django.utils.module_loading import import_string
 from django.utils import timezone
 import datetime
 
+## OVERALL
 # Clinical trial effort instance model
 class CTEffort(models.Model):
-    cte_id = models.AutoField(primary_key=True)
-    user_id = models.IntegerField(blank=True, null=True)
+    id = models.AutoField(primary_key=True)
+    user = models.IntegerField(blank=True, null=True)
     name = models.CharField(max_length=32, blank=True, null=True)
     estimated_accruals = models.IntegerField(blank=True, null=True)
-    pi_effort = models.FloatField(blank=True, null=True)
-    pi_effort_copy = models.BooleanField(default=False)
     monitor_days = models.IntegerField(blank=True, null=True)
     created = models.DateTimeField(auto_now=False, auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
@@ -25,10 +24,10 @@ class CTEffort(models.Model):
         managed = True
         db_table = 'effort_models'
 
-
+## TYPES
 # Cycle types model
 class CycleTypes(models.Model):
-    ct_id = models.AutoField(primary_key=True)
+    id = models.AutoField(primary_key=True)
     type = models.CharField(max_length=32, blank=True, null=True)
     name = models.CharField(max_length=32, blank=True, null=True)
 
@@ -39,17 +38,61 @@ class CycleTypes(models.Model):
 
 # Personnel types model
 class PersonnelTypes(models.Model):
-    pt_id = models.AutoField(primary_key=True)
+    id = models.AutoField(primary_key=True)
+    type = models.CharField(max_length=32, blank=True, null=True)
     name = models.CharField(max_length=32, blank=True, null=True)
 
     class Meta:
         managed = True
         db_table = 'personnel_types'
 
+# Complexity types model
+class ComplexityTypes(models.Model):
+    id = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=128, blank=True, null=True)
+    description = models.CharField(max_length=256, blank=True, null=True)
+    zero = models.CharField(max_length=128, blank=True, null=True)
+    one = models.CharField(max_length=128, blank=True, null=True)
+    two = models.CharField(max_length=128, blank=True, null=True)
+    three = models.CharField(max_length=128, blank=True, null=True)
+    three = models.CharField(max_length=128, blank=True, null=True)
+    weight = models.FloatField(blank=True, default=0)
 
+    class Meta:
+        managed = True
+        db_table = 'complexity_types'
+
+
+## PEOPLE
+# Personnel model
+class Personnel(models.Model):
+    id = models.AutoField(primary_key=True)
+    instance = models.ForeignKey('CTEffort',on_delete=models.CASCADE,)
+    type = models.ForeignKey('PersonnelTypes',on_delete=models.CASCADE,)
+    name = models.CharField(max_length=32, blank=True, null=True)
+    amount = models.IntegerField(blank=True, null=True)
+    updated = models.DateTimeField(auto_now=True)
+    updated_by = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        managed = True
+        db_table = 'personnel'
+
+
+# Personnel field
+class PersonnelField(models.Model):
+    id = models.AutoField(primary_key=True)
+    instance = models.ForeignKey('Personnel',on_delete=models.CASCADE,)
+    text = models.CharField(max_length=64, blank=True, null=True)
+
+    class Meta:
+        managed = True
+        db_table = 'personnel_fields'
+
+## VISITS
 # Trial arms model
 class TrialArms(models.Model):
-    ta_id = models.AutoField(primary_key=True)
+    id = models.AutoField(primary_key=True)
     instance = models.ForeignKey('CTEffort',on_delete=models.CASCADE,)
     name = models.CharField(max_length=32, blank=True, null=True)
     updated = models.DateTimeField(auto_now=True)
@@ -61,14 +104,14 @@ class TrialArms(models.Model):
 
 # Cycles model
 class Cycles(models.Model):
-    c_id = models.AutoField(primary_key=True)
+    id = models.AutoField(primary_key=True)
     instance = models.ForeignKey('CTEffort',on_delete=models.CASCADE,)
     arm = models.ForeignKey('TrialArms',on_delete=models.CASCADE, null=True)
     type = models.ForeignKey('CycleTypes',on_delete=models.CASCADE,)
-    number_cycles = models.IntegerField(blank=True, null=True)
-    number_visits = models.IntegerField(blank=True, null=True)
+    number_cycles = models.IntegerField(blank=True, null=True, default=1)
+    number_visits = models.IntegerField(blank=True, null=True, default=1)
     name = models.CharField(max_length=32, blank=True, null=True)
-    copy_hours = models.BooleanField(default=False)
+    copy_hours = models.BooleanField(default=True)
     updated = models.DateTimeField(auto_now=True)
     updated_by = models.IntegerField(blank=True, null=True)
 
@@ -78,89 +121,61 @@ class Cycles(models.Model):
 
 # Visits model
 class Visits(models.Model):
-    v_id = models.AutoField(primary_key=True)
+    id = models.AutoField(primary_key=True)
     instance = models.ForeignKey('CTEffort',on_delete=models.CASCADE,)
-    arm = models.ForeignKey('TrialArms',on_delete=models.CASCADE, null=True)
     cycle = models.ForeignKey('Cycles',on_delete=models.CASCADE,)
+    cycle_number = models.IntegerField(blank=True, null=True)
+    visit_number = models.IntegerField(blank=True, null=True)
     updated = models.DateTimeField(auto_now=True)
     updated_by = models.IntegerField(blank=True, null=True)
 
     class Meta:
         managed = True
         db_table = 'visits'
+        ordering = ['cycle_number', 'visit_number']
 
+# Visit value
+class VisitValue(models.Model):
+    id = models.AutoField(primary_key=True)
+    field = models.ForeignKey('PersonnelField',on_delete=models.CASCADE,)
+    visit = models.ForeignKey('Visits',on_delete=models.CASCADE,)
+    value = models.FloatField(blank=True, default=0)
 
-# Personnel model
-class Personnel(models.Model):
-    p_id = models.AutoField(primary_key=True)
+    class Meta:
+        managed = True
+        db_table = 'visit_values'
+
+## COMPLEXITY
+# Complexity model
+class Complexity(models.Model):
+    id = models.AutoField(primary_key=True)
     instance = models.ForeignKey('CTEffort',on_delete=models.CASCADE,)
+
+    class Meta:
+        managed = True
+        db_table = 'complexity'
+
+
+# Complexity value model
+class ComplexityValue(models.Model):
+    id = models.AutoField(primary_key=True)
+    complexity = models.ForeignKey('Complexity',on_delete=models.CASCADE,)
+    type = models.ForeignKey('ComplexityTypes',on_delete=models.CASCADE,)
+    value = models.IntegerField(blank=True, null=True, default=0)
+
+    class Meta:
+        managed = True
+        db_table = 'complexity_value'
+
+
+## DEFAULT TABLES
+# Personnel Defaults
+class PersonnelDefaults(models.Model):
+    id = models.AutoField(primary_key=True)
     type = models.ForeignKey('PersonnelTypes',on_delete=models.CASCADE,)
-    name = models.CharField(max_length=32, blank=True, null=True)
-    updated = models.DateTimeField(auto_now=True)
-    updated_by = models.IntegerField(blank=True, null=True)
+    name = models.CharField(max_length=64, blank=True, null=True)
+    text = models.CharField(max_length=128, blank=True, null=True)
 
     class Meta:
         managed = True
-        db_table = 'visit_personnel'
-
-
-# Clinical research coordinator visit model
-class CRCVisit(models.Model):
-    crc_id = models.AutoField(primary_key=True)
-    calendar_screen = models.FloatField(blank=True, null=True)
-    chart_review = models.FloatField(blank=True, null=True)
-    pre_cert = models.FloatField(blank=True, null=True)
-    consent = models.FloatField(blank=True, null=True)
-    eligibility_checklist = models.FloatField(blank=True, null=True)
-    registration = models.FloatField(blank=True, null=True)
-    ivrs_iwrs = models.FloatField(blank=True, null=True)
-    scheduling = models.FloatField(blank=True, null=True)
-    medical_history = models.FloatField(blank=True, null=True)
-    vitals = models.FloatField(blank=True, null=True)
-    lab_work = models.FloatField(blank=True, null=True)
-    imaging = models.FloatField(blank=True, null=True)
-    ecgs = models.FloatField(blank=True, null=True)
-    oral_medication = models.FloatField(blank=True, null=True)
-    clinic_notes = models.FloatField(blank=True, null=True)
-    billing = models.FloatField(blank=True, null=True)
-    crf_entry = models.FloatField(blank=True, null=True)
-
-    class Meta:
-        managed = True
-        db_table = 'crc_visit'
-
-# Nurse coordinator visit model
-class NCVisit(models.Model):
-    ncv_id = models.AutoField(primary_key=True)
-    infusion = models.FloatField(blank=True, null=True)
-    pk_samples = models.FloatField(blank=True, null=True)
-
-    class Meta:
-        managed = True
-        db_table = 'nc_visit'
-
-
-# Data coordinator visit model
-class DCVisit(models.Model):
-    dcv_id = models.AutoField(primary_key=True)
-    infusion = models.FloatField(blank=True, null=True)
-    pk_samples = models.FloatField(blank=True, null=True)
-
-    class Meta:
-        managed = True
-        db_table = 'dc_visit'
-
-
-# General visit model
-class GeneralVisit(models.Model):
-    gv_id = models.AutoField(primary_key=True)
-    training = models.FloatField(blank=True, null=True)
-    protocol_review = models.FloatField(blank=True, null=True)
-    source_document = models.FloatField(blank=True, null=True)
-    regulatory = models.FloatField(blank=True, null=True)
-    sponsor_meetings = models.FloatField(blank=True, null=True)
-    internal_meetings = models.FloatField(blank=True, null=True)
-
-    class Meta:
-        managed = True
-        db_table = 'g_visit'
+        db_table = 'personnel_defaults'
