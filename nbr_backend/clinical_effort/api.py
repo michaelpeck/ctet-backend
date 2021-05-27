@@ -16,6 +16,7 @@ from clinical_effort.models import CTEffort, CycleTypes, PersonnelTypes, TrialAr
 from .serializers import CTEffortSerializer, CycleTypesSerializer, PersonnelTypesSerializer, TrialArmsSerializer, CyclesSerializer, VisitsSerializer, PersonnelSerializer, ComplexityValueSerializer, ComplexitySerializer, ComplexityTypesSerializer
 
 from clinical_effort.actions.project import setup_project
+from clinical_effort.actions.people import add_person, update_person
 from clinical_effort.actions.arms import add_arm
 from clinical_effort.actions.cycles import add_cycle, update_cycle
 from clinical_effort.actions.complexity import create_complexity
@@ -56,6 +57,18 @@ class CTEffortViewSet(viewsets.ModelViewSet):
 
         # Create arm
         arm = add_arm(name='New Arm', proj_id=id)
+
+        # Retrieve updated project
+        project = CTEffort.objects.get(id=id)
+        p_serializer = self.serializer_class(project, many=False)
+
+        return Response(p_serializer.data, status=200)
+
+    @action(detail=True, methods=['GET'])
+    def add_person(self, request, id=None):
+
+        # Create arm
+        person = add_person(proj_id=id, type_id=5, amount=1)
 
         # Retrieve updated project
         project = CTEffort.objects.get(id=id)
@@ -204,3 +217,20 @@ class PersonnelViewSet(viewsets.ModelViewSet):
     queryset = Personnel.objects.all()
     serializer_class = PersonnelSerializer
     lookup_field = 'id'
+
+    @action(detail=True, methods=['PUT'])
+    def person_update(self, request, id=None):
+
+        # Get project
+        person = Personnel.objects.filter(id=id)
+        proj_id = person[0].instance
+        print(proj_id.id)
+
+        # Run person update function
+        new_person = update_person(object=request.data, proj_id=proj_id.id, person_id=id)
+
+        # Retrieve updated project
+        project = CTEffort.objects.get(id=proj_id.id)
+        p_serializer = CTEffortSerializer(project, many=False)
+
+        return Response(p_serializer.data, status=200)

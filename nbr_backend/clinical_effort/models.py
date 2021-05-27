@@ -83,7 +83,7 @@ class Personnel(models.Model):
 class PersonnelField(models.Model):
     id = models.AutoField(primary_key=True)
     instance = models.ForeignKey('Personnel',on_delete=models.CASCADE,)
-    text = models.CharField(max_length=32, blank=True, null=True)
+    text = models.CharField(max_length=64, blank=True, null=True)
 
     class Meta:
         managed = True

@@ -4,7 +4,7 @@ from ..serializers import CTEffortSerializer
 
 from .arms import add_arm
 from .cycles import add_cycle
-from .person import add_default_people
+from .people import add_default_people
 
 # Create new project
 def setup_project(object, id=None):

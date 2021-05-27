@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from clinical_effort.models import CTEffort, CycleTypes, PersonnelTypes, TrialArms, Cycles, Visits, Personnel
+from clinical_effort.models import CTEffort, CycleTypes, PersonnelTypes, TrialArms, Cycles, Visits, VisitValue, Personnel, PersonnelField
 from clinical_effort.models import Complexity, ComplexityValue, ComplexityTypes
 
 # Complexity value
@@ -33,12 +33,37 @@ class ComplexitySerializer(serializers.ModelSerializer):
         else:
             return []
 
+# Personnel fields
+class PersonnelFieldSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = PersonnelField
+        fields = '__all__'
+
 # Personnel
 class PersonnelSerializer(serializers.ModelSerializer):
+
+    field_types = serializers.SerializerMethodField()
 
     class Meta:
         model = Personnel
         fields = '__all__'
+
+    def get_field_types(self, obj):
+        flds = obj.personnelfield_set
+        field_s = PersonnelFieldSerializer(flds, many=True, required=False)
+        if field_s:
+            return field_s.data
+        else:
+            return []
+
+# Visit values
+class VisitValueSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = VisitValue
+        fields = '__all__'
+
 
 # Clinical trial instance visits
 class VisitsSerializer(serializers.ModelSerializer):
@@ -53,25 +78,18 @@ class VisitsSerializer(serializers.ModelSerializer):
         visits = {}
         people = obj.instance.personnel_set.all()
         for person in people:
-            # Get fields for person
+            # Initiate new visit
             new_vis = []
+            # Get fields for person
+            person_fields = person.personnelfield_set.all()
             # Loop through firlds and assemble visit
-            for fields in fields:
+            for field in person_fields:
 
                 if VisitValue.objects.filter(visit=obj.id, field=field).exists():
-                    crc_s = CRCVisitSerializer(CRCVisit.objects.get(visit=obj.id, field=field), many=False, required=True)
-                    new_vis.push(crc_s)
+                    vis_val = VisitValueSerializer(VisitValue.objects.get(visit=obj.id, field=field), many=False, required=True)
+                    new_vis.append(vis_val.data)
 
             visits[person.id] = new_vis
-
-        #
-        # if NCVisit.objects.filter(visit=obj.id).exists():
-        #     nc_s = NCVisitSerializer(NCVisit.objects.get(visit=obj.id), many=False, required=False)
-        #     visits['nc'] = nc_s.data
-        # else:
-        #     visits['nc'] = {}
-        #
-
 
         return visits
 

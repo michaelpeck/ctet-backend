@@ -15,7 +15,7 @@ def add_person(proj_id, type_id, amount):
 
     # Add default fields
     for default in defaults:
-        new_field = PersonnelField(instance=new_person, text=default.text)
+        new_field = PersonnelField(instance=new_person, text=default.name)
         new_field.save()
 
     return True
@@ -29,6 +29,21 @@ def add_default_people(proj_id):
 
     # Add people
     for type in types:
-        add_person(proj_id, type.id, 1)
+        add_person(proj_id=proj_id, type_id=type.id, amount=1)
+
+    return True
+
+
+# Update cycle visit instances
+def update_person(object, person_id=None, proj_id=None):
+
+    # Retrieve person
+    person = Personnel.objects.get(id=person_id)
+
+    # Update person
+    person.type = PersonnelTypes.objects.get(id=object['type'])
+    person.amount = object['amount']
+    person.save()
+
 
     return True
