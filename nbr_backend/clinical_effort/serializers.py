@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from clinical_effort.models import CTEffort, CycleTypes, PersonnelTypes, TrialArms, Cycles, Visits, VisitValue, Personnel, PersonnelField
+from clinical_effort.models import CTEffort, CycleTypes, PersonnelTypes, TrialArms, Cycles, Visits, VisitValue, Personnel, PersonnelFields
 from clinical_effort.models import Complexity, ComplexityValue, ComplexityTypes
 
 # Complexity value
@@ -33,29 +33,7 @@ class ComplexitySerializer(serializers.ModelSerializer):
         else:
             return []
 
-# Personnel fields
-class PersonnelFieldSerializer(serializers.ModelSerializer):
 
-    class Meta:
-        model = PersonnelField
-        fields = '__all__'
-
-# Personnel
-class PersonnelSerializer(serializers.ModelSerializer):
-
-    field_types = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Personnel
-        fields = '__all__'
-
-    def get_field_types(self, obj):
-        flds = obj.personnelfield_set
-        field_s = PersonnelFieldSerializer(flds, many=True, required=False)
-        if field_s:
-            return field_s.data
-        else:
-            return []
 
 # Visit values
 class VisitValueSerializer(serializers.ModelSerializer):
@@ -63,6 +41,26 @@ class VisitValueSerializer(serializers.ModelSerializer):
     class Meta:
         model = VisitValue
         fields = '__all__'
+
+# Personnel fields
+class PersonnelFieldsSerializer(serializers.ModelSerializer):
+
+    values = VisitValueSerializer(source='visitvalue_set', many=True, required=False)
+
+    class Meta:
+        model = PersonnelFields
+        fields = '__all__'
+
+
+# Personnel
+class PersonnelSerializer(serializers.ModelSerializer):
+
+    fields = PersonnelFieldsSerializer(source='personnelfields_set', many=True, required=False)
+
+    class Meta:
+        model = Personnel
+        fields = '__all__'
+
 
 
 # Clinical trial instance visits
@@ -81,7 +79,7 @@ class VisitsSerializer(serializers.ModelSerializer):
             # Initiate new visit
             new_vis = []
             # Get fields for person
-            person_fields = person.personnelfield_set.all()
+            person_fields = person.personnelfields_set.all()
             # Loop through firlds and assemble visit
             for field in person_fields:
 

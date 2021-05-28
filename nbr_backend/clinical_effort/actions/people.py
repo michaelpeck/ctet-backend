@@ -1,4 +1,4 @@
-from clinical_effort.models import CTEffort, Cycles, Visits, PersonnelTypes, Personnel, PersonnelField, PersonnelDefaults
+from clinical_effort.models import CTEffort, Cycles, Visits, PersonnelTypes, Personnel, PersonnelFields, PersonnelDefaults
 
 
 # Add person
@@ -15,7 +15,7 @@ def add_person(proj_id, type_id, amount):
 
     # Add default fields
     for default in defaults:
-        new_field = PersonnelField(instance=new_person, text=default.name)
+        new_field = PersonnelFields(instance=new_person, text=default.name)
         new_field.save()
 
     return True

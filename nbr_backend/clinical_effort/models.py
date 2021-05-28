@@ -15,6 +15,7 @@ class CTEffort(models.Model):
     user = models.IntegerField(blank=True, null=True)
     name = models.CharField(max_length=32, blank=True, null=True)
     estimated_accruals = models.IntegerField(blank=True, null=True)
+    estimated_subjects = models.IntegerField(blank=True, null=True)
     monitor_days = models.IntegerField(blank=True, null=True)
     created = models.DateTimeField(auto_now=False, auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
@@ -71,6 +72,8 @@ class Personnel(models.Model):
     type = models.ForeignKey('PersonnelTypes',on_delete=models.CASCADE,)
     name = models.CharField(max_length=32, blank=True, null=True)
     amount = models.IntegerField(blank=True, null=True)
+    year_hours = models.IntegerField(blank=True, null=True)
+    addl_lump_hours = models.IntegerField(blank=True, null=True)
     updated = models.DateTimeField(auto_now=True)
     updated_by = models.IntegerField(blank=True, null=True)
 
@@ -80,7 +83,7 @@ class Personnel(models.Model):
 
 
 # Personnel field
-class PersonnelField(models.Model):
+class PersonnelFields(models.Model):
     id = models.AutoField(primary_key=True)
     instance = models.ForeignKey('Personnel',on_delete=models.CASCADE,)
     text = models.CharField(max_length=64, blank=True, null=True)
@@ -137,7 +140,7 @@ class Visits(models.Model):
 # Visit value
 class VisitValue(models.Model):
     id = models.AutoField(primary_key=True)
-    field = models.ForeignKey('PersonnelField',on_delete=models.CASCADE,)
+    field = models.ForeignKey('PersonnelFields',on_delete=models.CASCADE,)
     visit = models.ForeignKey('Visits',on_delete=models.CASCADE,)
     value = models.FloatField(blank=True, default=0)
 

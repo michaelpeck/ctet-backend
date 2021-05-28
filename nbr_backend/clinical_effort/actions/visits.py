@@ -19,7 +19,7 @@ def add_visit(cycle_no, visit_no, proj_id=None, cycle_id=None):
 
     # Add initial values
     for person in project.personnel_set.all():
-        fields = person.personnelfield_set.all()
+        fields = person.personnelfields_set.all()
         for field in fields:
             new_val = VisitValue(field=field, visit=new_visit, value=0)
             new_val.save()

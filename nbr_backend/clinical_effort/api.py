@@ -12,8 +12,8 @@ import io
 import hashlib
 
 from clinical_effort.models import Complexity, ComplexityValue, ComplexityTypes
-from clinical_effort.models import CTEffort, CycleTypes, PersonnelTypes, TrialArms, Cycles, Visits, Personnel
-from .serializers import CTEffortSerializer, CycleTypesSerializer, PersonnelTypesSerializer, TrialArmsSerializer, CyclesSerializer, VisitsSerializer, PersonnelSerializer, ComplexityValueSerializer, ComplexitySerializer, ComplexityTypesSerializer
+from clinical_effort.models import CTEffort, CycleTypes, PersonnelTypes, TrialArms, Cycles, Visits, Personnel, PersonnelFields
+from .serializers import CTEffortSerializer, CycleTypesSerializer, PersonnelTypesSerializer, TrialArmsSerializer, CyclesSerializer, VisitsSerializer, PersonnelSerializer, PersonnelFieldsSerializer, ComplexityValueSerializer, ComplexitySerializer, ComplexityTypesSerializer
 
 from clinical_effort.actions.project import setup_project
 from clinical_effort.actions.people import add_person, update_person
@@ -206,6 +206,33 @@ class VisitsViewSet(viewsets.ModelViewSet):
     queryset = Visits.objects.all()
     serializer_class = VisitsSerializer
     lookup_field = 'id'
+
+# Personnel fields Viewset
+class PersonnelFieldsViewSet(viewsets.ModelViewSet):
+
+    permission_classes = [
+        permissions.AllowAny,
+    ]
+    queryset = PersonnelFields.objects.all()
+    serializer_class = PersonnelFieldsSerializer
+    lookup_field = 'id'
+
+    @action(detail=True, methods=['GET'])
+    def remove(self, request, id=None):
+
+        # Get field
+        field = self.get_object()
+
+        # Get instance cycles
+        instance = field.instance.instance
+        instance_s = CTEffortSerializer(instance, many=False)
+        cycles = instance_s.data['cycles']
+
+        # Delete field
+        field.delete()
+
+
+        return Response(cycles, status=200)
 
 
 # Personnel Viewset
