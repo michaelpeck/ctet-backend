@@ -11,9 +11,9 @@ import json
 import io
 import hashlib
 
-from clinical_effort.models import Complexity, ComplexityValue, ComplexityTypes
+from clinical_effort.models import Complexity, ComplexityValues, ComplexityTypes
 from clinical_effort.models import CTEffort, CycleTypes, PersonnelTypes, TrialArms, Cycles, Visits, Personnel, PersonnelFields
-from .serializers import CTEffortSerializer, CycleTypesSerializer, PersonnelTypesSerializer, TrialArmsSerializer, CyclesSerializer, VisitsSerializer, PersonnelSerializer, PersonnelFieldsSerializer, ComplexityValueSerializer, ComplexitySerializer, ComplexityTypesSerializer
+from .serializers import CTEffortSerializer, CycleTypesSerializer, PersonnelTypesSerializer, TrialArmsSerializer, CyclesSerializer, VisitsSerializer, PersonnelSerializer, PersonnelFieldsSerializer, ComplexityValuesSerializer, ComplexitySerializer, ComplexityTypesSerializer
 
 from clinical_effort.actions.project import setup_project
 from clinical_effort.actions.people import add_person, update_person
@@ -99,13 +99,13 @@ class ComplexityViewSet(viewsets.ModelViewSet):
 
 
 # Complexity Types Viewset
-class ComplexityValueViewSet(viewsets.ModelViewSet):
+class ComplexityValuesViewSet(viewsets.ModelViewSet):
 
     permission_classes = [
         permissions.AllowAny,
     ]
-    queryset = ComplexityValue.objects.all()
-    serializer_class = ComplexityValueSerializer
+    queryset = ComplexityValues.objects.all()
+    serializer_class = ComplexityValuesSerializer
     lookup_field = 'id'
 
 

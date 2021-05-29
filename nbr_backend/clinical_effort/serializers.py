@@ -1,6 +1,6 @@
 from rest_framework import serializers
-from clinical_effort.models import CTEffort, CycleTypes, PersonnelTypes, TrialArms, Cycles, Visits, VisitValue, Personnel, PersonnelFields
-from clinical_effort.models import Complexity, ComplexityValue, ComplexityTypes
+from clinical_effort.models import CTEffort, CycleTypes, PersonnelTypes, TrialArms, Cycles, Visits, VisitValues, Personnel, PersonnelFields
+from clinical_effort.models import Complexity, ComplexityValues, ComplexityTypes
 
 # Complexity value
 class ComplexityTypesSerializer(serializers.ModelSerializer):
@@ -10,10 +10,10 @@ class ComplexityTypesSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 # Complexity value
-class ComplexityValueSerializer(serializers.ModelSerializer):
+class ComplexityValuesSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = ComplexityValue
+        model = ComplexityValues
         fields = '__all__'
 
 # Complexity
@@ -26,8 +26,8 @@ class ComplexitySerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def get_values(self, obj):
-        vals = obj.complexityvalue_set
-        val_s = ComplexityValueSerializer(vals, many=True, required=False)
+        vals = obj.complexityvalues_set
+        val_s = ComplexityValuesSerializer(vals, many=True, required=False)
         if val_s:
             return val_s.data
         else:
@@ -36,16 +36,16 @@ class ComplexitySerializer(serializers.ModelSerializer):
 
 
 # Visit values
-class VisitValueSerializer(serializers.ModelSerializer):
+class VisitValuesSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = VisitValue
+        model = VisitValues
         fields = '__all__'
 
 # Personnel fields
 class PersonnelFieldsSerializer(serializers.ModelSerializer):
 
-    values = VisitValueSerializer(source='visitvalue_set', many=True, required=False)
+    values = VisitValuesSerializer(source='visitvalues_set', many=True, required=False)
 
     class Meta:
         model = PersonnelFields
@@ -83,8 +83,8 @@ class VisitsSerializer(serializers.ModelSerializer):
             # Loop through firlds and assemble visit
             for field in person_fields:
 
-                if VisitValue.objects.filter(visit=obj.id, field=field).exists():
-                    vis_val = VisitValueSerializer(VisitValue.objects.get(visit=obj.id, field=field), many=False, required=True)
+                if VisitValues.objects.filter(visit=obj.id, field=field).exists():
+                    vis_val = VisitValuesSerializer(VisitValues.objects.get(visit=obj.id, field=field), many=False, required=True)
                     new_vis.append(vis_val.data)
 
             visits[person.id] = new_vis

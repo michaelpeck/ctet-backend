@@ -1,4 +1,4 @@
-from clinical_effort.models import CTEffort, Cycles, Visits, VisitValue
+from clinical_effort.models import CTEffort, Cycles, Visits, VisitValues
 
 # Add value
 def add_value():
@@ -21,7 +21,7 @@ def add_visit(cycle_no, visit_no, proj_id=None, cycle_id=None):
     for person in project.personnel_set.all():
         fields = person.personnelfields_set.all()
         for field in fields:
-            new_val = VisitValue(field=field, visit=new_visit, value=0)
+            new_val = VisitValues(field=field, visit=new_visit, value=0)
             new_val.save()
 
 

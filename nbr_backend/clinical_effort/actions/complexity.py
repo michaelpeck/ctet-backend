@@ -1,4 +1,4 @@
-from clinical_effort.models import CTEffort, Cycles, CycleTypes, ComplexityTypes, Complexity, ComplexityValue
+from clinical_effort.models import CTEffort, Cycles, CycleTypes, ComplexityTypes, Complexity, ComplexityValues
 
 
 
@@ -15,7 +15,7 @@ def create_complexity(proj_id=None):
     # Add complexity
     types = ComplexityTypes.objects.all()
     for type in types:
-        new_val = ComplexityValue(complexity=new_complexity, type=type)
+        new_val = ComplexityValues(complexity=new_complexity, type=type)
         new_val.save()
 
     return True

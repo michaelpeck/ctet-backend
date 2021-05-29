@@ -138,7 +138,7 @@ class Visits(models.Model):
         ordering = ['cycle_number', 'visit_number']
 
 # Visit value
-class VisitValue(models.Model):
+class VisitValues(models.Model):
     id = models.AutoField(primary_key=True)
     field = models.ForeignKey('PersonnelFields',on_delete=models.CASCADE,)
     visit = models.ForeignKey('Visits',on_delete=models.CASCADE,)
@@ -160,7 +160,7 @@ class Complexity(models.Model):
 
 
 # Complexity value model
-class ComplexityValue(models.Model):
+class ComplexityValues(models.Model):
     id = models.AutoField(primary_key=True)
     complexity = models.ForeignKey('Complexity',on_delete=models.CASCADE,)
     type = models.ForeignKey('ComplexityTypes',on_delete=models.CASCADE,)
@@ -168,7 +168,7 @@ class ComplexityValue(models.Model):
 
     class Meta:
         managed = True
-        db_table = 'complexity_value'
+        db_table = 'complexity_values'
 
 
 ## DEFAULT TABLES
