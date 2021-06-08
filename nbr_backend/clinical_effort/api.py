@@ -12,8 +12,8 @@ import io
 import hashlib
 
 from clinical_effort.models import Complexity, ComplexityValues, ComplexityTypes
-from clinical_effort.models import CTEffort, CycleTypes, PersonnelTypes, TrialArms, Cycles, Visits, Personnel, PersonnelFields
-from .serializers import CTEffortSerializer, CycleTypesSerializer, PersonnelTypesSerializer, TrialArmsSerializer, CyclesSerializer, VisitsSerializer, PersonnelSerializer, PersonnelFieldsSerializer, ComplexityValuesSerializer, ComplexitySerializer, ComplexityTypesSerializer
+from clinical_effort.models import CTEffort, CycleTypes, PersonnelTypes, TrialArms, Cycles, Visits, VisitValues, Personnel, PersonnelFields
+from .serializers import CTEffortSerializer, CycleTypesSerializer, PersonnelTypesSerializer, TrialArmsSerializer, CyclesSerializer, VisitsSerializer, VisitValuesSerializer, PersonnelSerializer, PersonnelFieldsSerializer, ComplexityValuesSerializer, ComplexitySerializer, ComplexityTypesSerializer
 
 from clinical_effort.actions.project import setup_project
 from clinical_effort.actions.people import add_person, update_person
@@ -205,6 +205,17 @@ class VisitsViewSet(viewsets.ModelViewSet):
     ]
     queryset = Visits.objects.all()
     serializer_class = VisitsSerializer
+    lookup_field = 'id'
+
+
+# Clinical trial instance visits Viewset
+class VisitValuesViewSet(viewsets.ModelViewSet):
+
+    permission_classes = [
+        permissions.AllowAny,
+    ]
+    queryset = VisitValues.objects.all()
+    serializer_class = VisitValuesSerializer
     lookup_field = 'id'
 
 # Personnel fields Viewset

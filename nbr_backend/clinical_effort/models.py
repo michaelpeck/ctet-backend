@@ -15,7 +15,7 @@ class CTEffort(models.Model):
     user = models.IntegerField(blank=True, null=True)
     name = models.CharField(max_length=32, blank=True, null=True)
     estimated_accruals = models.IntegerField(blank=True, null=True)
-    estimated_subjects = models.IntegerField(blank=True, null=True)
+    estimated_subjects = models.IntegerField(blank=True, null=True, default=0)
     monitor_days = models.IntegerField(blank=True, null=True)
     created = models.DateTimeField(auto_now=False, auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
@@ -58,6 +58,7 @@ class ComplexityTypes(models.Model):
     three = models.CharField(max_length=128, blank=True, null=True)
     three = models.CharField(max_length=128, blank=True, null=True)
     weight = models.FloatField(blank=True, default=0)
+    follow_up = models.BooleanField(blank=True, null=True, default=False)
 
     class Meta:
         managed = True
@@ -72,8 +73,8 @@ class Personnel(models.Model):
     type = models.ForeignKey('PersonnelTypes',on_delete=models.CASCADE,)
     name = models.CharField(max_length=32, blank=True, null=True)
     amount = models.IntegerField(blank=True, null=True)
-    year_hours = models.IntegerField(blank=True, null=True)
-    addl_lump_hours = models.IntegerField(blank=True, null=True)
+    year_hours = models.IntegerField(blank=True, null=True, default=1664)
+    addl_lump_hours = models.IntegerField(blank=True, null=True, default=0)
     updated = models.DateTimeField(auto_now=True)
     updated_by = models.IntegerField(blank=True, null=True)
 
