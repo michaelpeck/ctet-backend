@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from clinical_effort.models import CTEffort, CycleTypes, PersonnelTypes, TrialArms, Cycles, Visits, VisitValues, Personnel, PersonnelFields
-from clinical_effort.models import Complexity, ComplexityValues, ComplexityTypes
+from clinical_effort.models import Complexity, ComplexityValues, ComplexityTypes, SummaryYears
 
 # Complexity value
 class ComplexityTypesSerializer(serializers.ModelSerializer):
@@ -33,6 +33,12 @@ class ComplexitySerializer(serializers.ModelSerializer):
         else:
             return []
 
+# Summary years value
+class SummaryYearsSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = SummaryYears
+        fields = '__all__'
 
 
 # Visit values
@@ -132,6 +138,7 @@ class CTEffortSerializer(serializers.ModelSerializer):
 
     arms = TrialArmsSerializer(source='trialarms_set', many=True, required=False)
     people = PersonnelSerializer(source='personnel_set', many=True, required=False)
+    years = SummaryYearsSerializer(source='summaryyears_set', many=True, required=False)
 
     class Meta:
         model = CTEffort

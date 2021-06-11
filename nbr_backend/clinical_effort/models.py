@@ -13,8 +13,10 @@ import datetime
 class CTEffort(models.Model):
     id = models.AutoField(primary_key=True)
     user = models.IntegerField(blank=True, null=True)
-    name = models.CharField(max_length=32, blank=True, null=True)
-    estimated_accruals = models.IntegerField(blank=True, null=True)
+    protocol_number = models.CharField(max_length=32, blank=True, null=True)
+    accounting_number = models.CharField(max_length=32, blank=True, null=True)
+    name = models.CharField(max_length=64, blank=True, null=True)
+    pi = models.CharField(max_length=64, blank=True, null=True)
     estimated_subjects = models.IntegerField(blank=True, null=True, default=0)
     monitor_days = models.IntegerField(blank=True, null=True)
     created = models.DateTimeField(auto_now=False, auto_now_add=True)
@@ -73,7 +75,7 @@ class Personnel(models.Model):
     type = models.ForeignKey('PersonnelTypes',on_delete=models.CASCADE,)
     name = models.CharField(max_length=32, blank=True, null=True)
     amount = models.IntegerField(blank=True, null=True)
-    year_hours = models.IntegerField(blank=True, null=True, default=1664)
+    year_hours = models.IntegerField(blank=True, null=True, default=2080)
     addl_lump_hours = models.IntegerField(blank=True, null=True, default=0)
     updated = models.DateTimeField(auto_now=True)
     updated_by = models.IntegerField(blank=True, null=True)
@@ -105,6 +107,20 @@ class TrialArms(models.Model):
     class Meta:
         managed = True
         db_table = 'trial_arms'
+
+# Summary years model
+class SummaryYears(models.Model):
+    id = models.AutoField(primary_key=True)
+    instance = models.ForeignKey('CTEffort',on_delete=models.CASCADE,)
+    name = models.CharField(max_length=32, blank=True, null=True, default = 'Year')
+    number = models.IntegerField(blank=True, null=True)
+    screen = models.IntegerField(blank=True, null=True, default=0)
+    treatment = models.IntegerField(blank=True, null=True, default=0)
+    follow_up = models.IntegerField(blank=True, null=True, default=0)
+
+    class Meta:
+        managed = True
+        db_table = 'summary_years'
 
 # Cycles model
 class Cycles(models.Model):

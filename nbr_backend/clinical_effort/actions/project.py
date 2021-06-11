@@ -5,6 +5,7 @@ from ..serializers import CTEffortSerializer
 from .arms import add_arm
 from .cycles import add_cycle
 from .people import add_default_people
+from .years import add_default_years
 
 # Create new project
 def setup_project(object, id=None):
@@ -14,6 +15,9 @@ def setup_project(object, id=None):
 
     # Add people
     add_default_people(id)
+
+    # Add years
+    add_default_years(id)
 
     # Create project pre cycles
     pre_cycles = ['pre-screening', 'screening']

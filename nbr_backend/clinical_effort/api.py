@@ -11,12 +11,12 @@ import json
 import io
 import hashlib
 
-from clinical_effort.models import Complexity, ComplexityValues, ComplexityTypes
+from clinical_effort.models import Complexity, ComplexityValues, ComplexityTypes, SummaryYears
 from clinical_effort.models import CTEffort, CycleTypes, PersonnelTypes, TrialArms, Cycles, Visits, VisitValues, Personnel, PersonnelFields
-from .serializers import CTEffortSerializer, CycleTypesSerializer, PersonnelTypesSerializer, TrialArmsSerializer, CyclesSerializer, VisitsSerializer, VisitValuesSerializer, PersonnelSerializer, PersonnelFieldsSerializer, ComplexityValuesSerializer, ComplexitySerializer, ComplexityTypesSerializer
+from .serializers import CTEffortSerializer, CycleTypesSerializer, PersonnelTypesSerializer, TrialArmsSerializer, CyclesSerializer, VisitsSerializer, VisitValuesSerializer, PersonnelSerializer, PersonnelFieldsSerializer, ComplexityValuesSerializer, ComplexitySerializer, ComplexityTypesSerializer, SummaryYearsSerializer
 
 from clinical_effort.actions.project import setup_project
-from clinical_effort.actions.people import add_person, update_person
+from clinical_effort.actions.people import add_person, update_person, add_field
 from clinical_effort.actions.arms import add_arm
 from clinical_effort.actions.cycles import add_cycle, update_cycle
 from clinical_effort.actions.complexity import create_complexity
@@ -197,6 +197,16 @@ class CyclesViewSet(viewsets.ModelViewSet):
         return Response(p_serializer.data, status=200)
 
 
+# Summary years Viewset
+class SummaryYearsViewSet(viewsets.ModelViewSet):
+
+    permission_classes = [
+        permissions.AllowAny,
+    ]
+    queryset = SummaryYears.objects.all()
+    serializer_class = SummaryYearsSerializer
+    lookup_field = 'id'
+
 # Clinical trial instance visits Viewset
 class VisitsViewSet(viewsets.ModelViewSet):
 
@@ -269,6 +279,26 @@ class PersonnelViewSet(viewsets.ModelViewSet):
 
         # Retrieve updated project
         project = CTEffort.objects.get(id=proj_id.id)
+        p_serializer = CTEffortSerializer(project, many=False)
+
+        return Response(p_serializer.data, status=200)
+
+    @action(detail=True, methods=['POST'])
+    def add_field(self, request, id=None):
+
+        # Get project
+        person = Personnel.objects.filter(id=id)
+        proj = person[0].instance
+
+        # amount
+        amount = request.data['amount']
+
+        # Run person update function
+        for field in range(amount):
+            new_field = add_field(project_id=proj.id, person_id=id)
+
+        # Retrieve updated project
+        project = CTEffort.objects.get(id=proj.id)
         p_serializer = CTEffortSerializer(project, many=False)
 
         return Response(p_serializer.data, status=200)
