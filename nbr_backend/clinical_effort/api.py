@@ -16,7 +16,7 @@ from clinical_effort.models import CTEffort, CycleTypes, PersonnelTypes, TrialAr
 from .serializers import CTEffortSerializer, CycleTypesSerializer, PersonnelTypesSerializer, TrialArmsSerializer, CyclesSerializer, VisitsSerializer, VisitValuesSerializer, PersonnelSerializer, PersonnelFieldsSerializer, ComplexityValuesSerializer, ComplexitySerializer, ComplexityTypesSerializer, SummaryYearsSerializer
 
 from clinical_effort.actions.project import setup_project
-from clinical_effort.actions.people import add_person, update_person, add_field
+from clinical_effort.actions.people import add_person, update_person, add_field, add_new_person_fields
 from clinical_effort.actions.arms import add_arm
 from clinical_effort.actions.cycles import add_cycle, update_cycle
 from clinical_effort.actions.complexity import create_complexity
@@ -67,8 +67,11 @@ class CTEffortViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['GET'])
     def add_person(self, request, id=None):
 
-        # Create arm
+        # Add person
         person = add_person(proj_id=id, type_id=5, amount=1)
+
+        # Add fields for arms
+        add_new_person_fields(proj_id=id, person=person)
 
         # Retrieve updated project
         project = CTEffort.objects.get(id=id)
@@ -245,7 +248,7 @@ class PersonnelFieldsViewSet(viewsets.ModelViewSet):
         field = self.get_object()
 
         # Get instance cycles
-        instance = field.instance.instance
+        instance = field.person.instance
         instance_s = CTEffortSerializer(instance, many=False)
         cycles = instance_s.data['cycles']
 

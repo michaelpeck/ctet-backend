@@ -28,6 +28,17 @@ class CTEffort(models.Model):
         db_table = 'effort_models'
 
 ## TYPES
+# Arm types model
+class TrialArmTypes(models.Model):
+    id = models.AutoField(primary_key=True)
+    type = models.CharField(max_length=32, blank=True, null=True)
+    name = models.CharField(max_length=32, blank=True, null=True)
+
+    class Meta:
+        managed = True
+        db_table = 'trial_arm_types'
+
+
 # Cycle types model
 class CycleTypes(models.Model):
     id = models.AutoField(primary_key=True)
@@ -85,21 +96,14 @@ class Personnel(models.Model):
         db_table = 'personnel'
 
 
-# Personnel field
-class PersonnelFields(models.Model):
-    id = models.AutoField(primary_key=True)
-    instance = models.ForeignKey('Personnel',on_delete=models.CASCADE,)
-    text = models.CharField(max_length=64, blank=True, null=True)
 
-    class Meta:
-        managed = True
-        db_table = 'personnel_fields'
 
 ## VISITS
 # Trial arms model
 class TrialArms(models.Model):
     id = models.AutoField(primary_key=True)
     instance = models.ForeignKey('CTEffort',on_delete=models.CASCADE,)
+    type = models.ForeignKey('TrialArmTypes',on_delete=models.CASCADE, null=True)
     name = models.CharField(max_length=32, blank=True, null=True)
     updated = models.DateTimeField(auto_now=True)
     updated_by = models.IntegerField(blank=True, null=True)
@@ -107,6 +111,18 @@ class TrialArms(models.Model):
     class Meta:
         managed = True
         db_table = 'trial_arms'
+
+
+# Personnel field
+class PersonnelFields(models.Model):
+    id = models.AutoField(primary_key=True)
+    person = models.ForeignKey('Personnel',on_delete=models.CASCADE,)
+    arm = models.ForeignKey('TrialArms',on_delete=models.CASCADE, null=True)
+    text = models.CharField(max_length=64, blank=True, null=True)
+
+    class Meta:
+        managed = True
+        db_table = 'personnel_fields'
 
 # Summary years model
 class SummaryYears(models.Model):

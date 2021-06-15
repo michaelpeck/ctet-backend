@@ -8,27 +8,21 @@ def add_person(proj_id, type_id, amount):
     # Retrieve project and cycle
     project = CTEffort.objects.get(id=proj_id)
     type = PersonnelTypes.objects.get(id=type_id)
-    defaults = type.personneldefaults_set.all()
     cycles = project.cycles_set.all()
 
     # Add person
     new_person = Personnel(instance=project, type=type, name=type.name, amount=1)
     new_person.save()
 
-    # Add default fields
-    for default in defaults:
-        new_field = PersonnelFields(instance=new_person, text=default.name)
-        new_field.save()
-
     # Add visit values
-    fields = new_person.personnelfields_set.all()
-    for cycle in cycles:
-        visits = cycle.visits_set.all()
-        for visit in visits:
-            for field in fields:
-                add_value(field, visit, 0)
+    # fields = new_person.personnelfields_set.all()
+    # for cycle in cycles:
+    #     visits = cycle.visits_set.all()
+    #     for visit in visits:
+    #         for field in fields:
+    #             add_value(field, visit, 0)
 
-    return True
+    return new_person
 
 # Add default people
 def add_default_people(proj_id):
@@ -78,5 +72,31 @@ def add_field(project_id=None, person_id=None):
         visits = cycle.visits_set.all()
         for visit in visits:
             add_value(new_field, visit, 0)
+
+    return True
+
+
+# Add person
+def add_new_person_fields(proj_id, person):
+
+    # Retrieve project and cycle
+    project = CTEffort.objects.get(id=proj_id)
+    arms = project.trialarms_set.all()
+
+    for arm in arms:
+        # Add default fields
+        defaults = person.type.personneldefaults_set.all()
+        for default in defaults:
+            new_field = PersonnelFields(person=person, arm=arm, text=default.name)
+            new_field.save()
+        # Add visit values
+        fields = person.personnelfields_set.all()
+        cycles = arm.cycles_set.all()
+        for cycle in cycles:
+            visits = cycle.visits_set.all()
+            for visit in visits:
+                for field in fields:
+                    add_value(field, visit, 0)
+
 
     return True

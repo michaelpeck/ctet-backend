@@ -90,6 +90,8 @@ class VisitsSerializer(serializers.ModelSerializer):
             for field in person_fields:
 
                 if VisitValues.objects.filter(visit=obj.id, field=field).exists():
+                    # print('yo')
+                    # print(VisitValuesSerializer(VisitValues.objects.filter(visit=obj.id, field=field), many=True).data)
                     vis_val = VisitValuesSerializer(VisitValues.objects.get(visit=obj.id, field=field), many=False, required=True)
                     new_vis.append(vis_val.data)
 
@@ -119,6 +121,7 @@ class CyclesSerializer(serializers.ModelSerializer):
 class TrialArmsSerializer(serializers.ModelSerializer):
 
     cycles = CyclesSerializer(source='cycles_set', many=True, required=False)
+    fields = PersonnelFieldsSerializer(source='personnelfields_set', many=True, required=False)
 
     class Meta:
         model = TrialArms
