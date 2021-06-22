@@ -1,6 +1,6 @@
 from rest_framework import serializers
-from clinical_effort.models import CTEffort, CycleTypes, PersonnelTypes, TrialArms, Cycles, Visits, VisitValue, Personnel, PersonnelField
-from clinical_effort.models import Complexity, ComplexityValue, ComplexityTypes
+from clinical_effort.models import CTEffort, CycleTypes, PersonnelTypes, TrialArms, Cycles, Visits, VisitValues, Personnel, PersonnelFields
+from clinical_effort.models import Complexity, ComplexityValues, ComplexityTypes, SummaryYears
 
 # Complexity value
 class ComplexityTypesSerializer(serializers.ModelSerializer):
@@ -10,10 +10,10 @@ class ComplexityTypesSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 # Complexity value
-class ComplexityValueSerializer(serializers.ModelSerializer):
+class ComplexityValuesSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = ComplexityValue
+        model = ComplexityValues
         fields = '__all__'
 
 # Complexity
@@ -26,43 +26,56 @@ class ComplexitySerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def get_values(self, obj):
-        vals = obj.complexityvalue_set
-        val_s = ComplexityValueSerializer(vals, many=True, required=False)
+        vals = obj.complexityvalues_set
+        val_s = ComplexityValuesSerializer(vals, many=True, required=False)
         if val_s:
             return val_s.data
         else:
             return []
 
+# Summary years value
+class SummaryYearsSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = SummaryYears
+        fields = '__all__'
+
+
+# Visit values
+class VisitValuesSerializer(serializers.ModelSerializer):
+
+
+    class Meta:
+        model = VisitValues
+        fields = '__all__'
+
 # Personnel fields
-class PersonnelFieldSerializer(serializers.ModelSerializer):
+class PersonnelFieldsSerializer(serializers.ModelSerializer):
+
+    values = VisitValuesSerializer(source='visitvalues_set', many=True, required=False)
+
 
     class Meta:
-        model = PersonnelField
+        model = PersonnelFields
         fields = '__all__'
 
-# Personnel
-class PersonnelSerializer(serializers.ModelSerializer):
 
-    field_types = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Personnel
-        fields = '__all__'
-
-    def get_field_types(self, obj):
-        flds = obj.personnelfield_set
-        field_s = PersonnelFieldSerializer(flds, many=True, required=False)
-        if field_s:
-            return field_s.data
+    def get_arm(self, obj):
+        # fields = {}
+        arm_num = obj.field.arm
+        # arms_s = TrialArmsSerializer(arms, many=True, required=False)
+        # for arm in arms_s.data:
+        #     flds = obj.personnelfields_set.filter(arm=arm['id'])
+        #     flds_s = PersonnelFieldsSerializer(flds, many=True, required=False)
+        #     fields[arm['id']] = flds_s.data
+        if arm_num:
+            return arm_num
         else:
             return []
 
-# Visit values
-class VisitValueSerializer(serializers.ModelSerializer):
 
-    class Meta:
-        model = VisitValue
-        fields = '__all__'
+
+
 
 
 # Clinical trial instance visits
@@ -81,12 +94,14 @@ class VisitsSerializer(serializers.ModelSerializer):
             # Initiate new visit
             new_vis = []
             # Get fields for person
-            person_fields = person.personnelfield_set.all()
+            person_fields = person.personnelfields_set.all()
             # Loop through firlds and assemble visit
             for field in person_fields:
 
-                if VisitValue.objects.filter(visit=obj.id, field=field).exists():
-                    vis_val = VisitValueSerializer(VisitValue.objects.get(visit=obj.id, field=field), many=False, required=True)
+                if VisitValues.objects.filter(visit=obj.id, field=field).exists():
+                    # print('yo')
+                    # print(VisitValuesSerializer(VisitValues.objects.filter(visit=obj.id, field=field), many=True).data)
+                    vis_val = VisitValuesSerializer(VisitValues.objects.get(visit=obj.id, field=field), many=False, required=True)
                     new_vis.append(vis_val.data)
 
             visits[person.id] = new_vis
@@ -115,6 +130,7 @@ class CyclesSerializer(serializers.ModelSerializer):
 class TrialArmsSerializer(serializers.ModelSerializer):
 
     cycles = CyclesSerializer(source='cycles_set', many=True, required=False)
+    fields = PersonnelFieldsSerializer(source='personnelfields_set', many=True, required=False)
 
     class Meta:
         model = TrialArms
@@ -123,17 +139,41 @@ class TrialArmsSerializer(serializers.ModelSerializer):
 
 
 
+# Personnel
+class PersonnelSerializer(serializers.ModelSerializer):
+
+    arm_fields = serializers.SerializerMethodField()
+    # fields = PersonnelFieldsSerializer(source='personnelfields_set', many=True, required=False)
+
+    class Meta:
+        model = Personnel
+        fields = '__all__'
+
+    def get_arm_fields(self, obj):
+        fields = {}
+        arms = obj.instance.trialarms_set
+        arms_s = TrialArmsSerializer(arms, many=True, required=False)
+        for arm in arms_s.data:
+            flds = obj.personnelfields_set.filter(arm=arm['id'])
+            flds_s = PersonnelFieldsSerializer(flds, many=True, required=False)
+            fields[arm['id']] = flds_s.data
+        if arms_s:
+            return fields
+        else:
+            return []
+
+
+
 # Clinical trial effort instance
 class CTEffortSerializer(serializers.ModelSerializer):
     #
     cycles = serializers.SerializerMethodField()
-    pre_cycles = serializers.SerializerMethodField()
-    post_cycles = serializers.SerializerMethodField()
     complexity = serializers.SerializerMethodField()
 
 
     arms = TrialArmsSerializer(source='trialarms_set', many=True, required=False)
     people = PersonnelSerializer(source='personnel_set', many=True, required=False)
+    years = SummaryYearsSerializer(source='summaryyears_set', many=True, required=False)
 
     class Meta:
         model = CTEffort
@@ -157,22 +197,6 @@ class CTEffortSerializer(serializers.ModelSerializer):
         else:
             return []
 
-
-    def get_pre_cycles(self, obj):
-        cycles = obj.cycles_set.filter(type_id__in = [1, 2])
-        cycles_s = CyclesSerializer(cycles, many=True, required=False)
-        if cycles_s:
-            return cycles_s.data
-        else:
-            return []
-
-    def get_post_cycles(self, obj):
-        cycles = obj.cycles_set.filter(type_id__in = [4, 5])
-        cycles_s = CyclesSerializer(cycles, many=True, required=False)
-        if cycles_s:
-            return cycles_s.data
-        else:
-            return []
 
     def get_complexity(self, obj):
         if Complexity.objects.filter(instance=obj.id).exists():

@@ -13,8 +13,11 @@ import datetime
 class CTEffort(models.Model):
     id = models.AutoField(primary_key=True)
     user = models.IntegerField(blank=True, null=True)
-    name = models.CharField(max_length=32, blank=True, null=True)
-    estimated_accruals = models.IntegerField(blank=True, null=True)
+    protocol_number = models.CharField(max_length=32, blank=True, null=True)
+    accounting_number = models.CharField(max_length=32, blank=True, null=True)
+    name = models.CharField(max_length=64, blank=True, null=True)
+    pi = models.CharField(max_length=64, blank=True, null=True)
+    estimated_subjects = models.IntegerField(blank=True, null=True, default=0)
     monitor_days = models.IntegerField(blank=True, null=True)
     created = models.DateTimeField(auto_now=False, auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
@@ -25,6 +28,17 @@ class CTEffort(models.Model):
         db_table = 'effort_models'
 
 ## TYPES
+# Arm types model
+class TrialArmTypes(models.Model):
+    id = models.AutoField(primary_key=True)
+    type = models.CharField(max_length=32, blank=True, null=True)
+    name = models.CharField(max_length=32, blank=True, null=True)
+
+    class Meta:
+        managed = True
+        db_table = 'trial_arm_types'
+
+
 # Cycle types model
 class CycleTypes(models.Model):
     id = models.AutoField(primary_key=True)
@@ -57,6 +71,7 @@ class ComplexityTypes(models.Model):
     three = models.CharField(max_length=128, blank=True, null=True)
     three = models.CharField(max_length=128, blank=True, null=True)
     weight = models.FloatField(blank=True, default=0)
+    follow_up = models.BooleanField(blank=True, null=True, default=False)
 
     class Meta:
         managed = True
@@ -71,6 +86,8 @@ class Personnel(models.Model):
     type = models.ForeignKey('PersonnelTypes',on_delete=models.CASCADE,)
     name = models.CharField(max_length=32, blank=True, null=True)
     amount = models.IntegerField(blank=True, null=True)
+    year_hours = models.IntegerField(blank=True, null=True, default=2080)
+    addl_lump_hours = models.IntegerField(blank=True, null=True, default=0)
     updated = models.DateTimeField(auto_now=True)
     updated_by = models.IntegerField(blank=True, null=True)
 
@@ -79,21 +96,14 @@ class Personnel(models.Model):
         db_table = 'personnel'
 
 
-# Personnel field
-class PersonnelField(models.Model):
-    id = models.AutoField(primary_key=True)
-    instance = models.ForeignKey('Personnel',on_delete=models.CASCADE,)
-    text = models.CharField(max_length=64, blank=True, null=True)
 
-    class Meta:
-        managed = True
-        db_table = 'personnel_fields'
 
 ## VISITS
 # Trial arms model
 class TrialArms(models.Model):
     id = models.AutoField(primary_key=True)
     instance = models.ForeignKey('CTEffort',on_delete=models.CASCADE,)
+    type = models.ForeignKey('TrialArmTypes',on_delete=models.CASCADE, null=True)
     name = models.CharField(max_length=32, blank=True, null=True)
     updated = models.DateTimeField(auto_now=True)
     updated_by = models.IntegerField(blank=True, null=True)
@@ -101,6 +111,32 @@ class TrialArms(models.Model):
     class Meta:
         managed = True
         db_table = 'trial_arms'
+
+
+# Personnel field
+class PersonnelFields(models.Model):
+    id = models.AutoField(primary_key=True)
+    person = models.ForeignKey('Personnel',on_delete=models.CASCADE,)
+    arm = models.ForeignKey('TrialArms',on_delete=models.CASCADE, null=True)
+    text = models.CharField(max_length=64, blank=True, null=True)
+
+    class Meta:
+        managed = True
+        db_table = 'personnel_fields'
+
+# Summary years model
+class SummaryYears(models.Model):
+    id = models.AutoField(primary_key=True)
+    instance = models.ForeignKey('CTEffort',on_delete=models.CASCADE,)
+    name = models.CharField(max_length=32, blank=True, null=True, default = 'Year')
+    number = models.IntegerField(blank=True, null=True)
+    screen = models.IntegerField(blank=True, null=True, default=0)
+    treatment = models.IntegerField(blank=True, null=True, default=0)
+    follow_up = models.IntegerField(blank=True, null=True, default=0)
+
+    class Meta:
+        managed = True
+        db_table = 'summary_years'
 
 # Cycles model
 class Cycles(models.Model):
@@ -135,9 +171,9 @@ class Visits(models.Model):
         ordering = ['cycle_number', 'visit_number']
 
 # Visit value
-class VisitValue(models.Model):
+class VisitValues(models.Model):
     id = models.AutoField(primary_key=True)
-    field = models.ForeignKey('PersonnelField',on_delete=models.CASCADE,)
+    field = models.ForeignKey('PersonnelFields',on_delete=models.CASCADE,)
     visit = models.ForeignKey('Visits',on_delete=models.CASCADE,)
     value = models.FloatField(blank=True, default=0)
 
@@ -157,7 +193,7 @@ class Complexity(models.Model):
 
 
 # Complexity value model
-class ComplexityValue(models.Model):
+class ComplexityValues(models.Model):
     id = models.AutoField(primary_key=True)
     complexity = models.ForeignKey('Complexity',on_delete=models.CASCADE,)
     type = models.ForeignKey('ComplexityTypes',on_delete=models.CASCADE,)
@@ -165,7 +201,7 @@ class ComplexityValue(models.Model):
 
     class Meta:
         managed = True
-        db_table = 'complexity_value'
+        db_table = 'complexity_values'
 
 
 ## DEFAULT TABLES

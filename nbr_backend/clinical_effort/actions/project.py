@@ -3,8 +3,8 @@ from ..serializers import CTEffortSerializer
 
 
 from .arms import add_arm
-from .cycles import add_cycle
 from .people import add_default_people
+from .years import add_default_years
 
 # Create new project
 def setup_project(object, id=None):
@@ -15,18 +15,21 @@ def setup_project(object, id=None):
     # Add people
     add_default_people(id)
 
+    # Add years
+    add_default_years(id)
+
     # Create project pre cycles
     pre_cycles = ['pre-screening', 'screening']
-    for cycle in pre_cycles:
-        add_cycle(type=cycle, proj_id=id)
+    add_arm(name='Screening', cycle_names=pre_cycles, type_id=1, proj_id=id)
 
     # Create 1 arm
-    add_arm(name='Arm 1', proj_id=id)
+    arm_cycles = ['standard', 'custom']
+    add_arm(name='Arm 1', cycle_names=arm_cycles, type_id=2, proj_id=id)
 
     # Create project post cycles
     post_cycles = ['end-of-treatment', 'follow-up']
-    for cycle in post_cycles:
-        add_cycle(type=cycle, proj_id=id)
+    add_arm(name='Follow-up', cycle_names=post_cycles, type_id=3, proj_id=id)
+
 
     project = CTEffort.objects.get(id=id)
     serializer = CTEffortSerializer(project, many=False)

@@ -1,0 +1,11 @@
+Hi there, \n
+Someone commented on one of your projects. \n\n
+
+Project: {{ title }}  \n
+PI: {{ pi }} \n
+RSP ID: {{ rsp_id }}  \n
+Committee: {{ committee }} \n
+Comment by: {{ commented_by }} \n
+Date: {{ date }} \n
+
+\n\nComments: {{ comments }} \n
