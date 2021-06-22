@@ -28,14 +28,4 @@ def add_arm(name, cycle_names, type_id, proj_id=None):
         add_cycle(type=cycle, proj_id=proj_id, arm_id=arm.id)
 
 
-
-    # # Add visit values
-    # fields = person.personnelfields_set.all()
-    # cycles = arm.cycles_set.all()
-    # for cycle in cycles:
-    #     visits = cycle.visits_set.all()
-    #     for visit in visits:
-    #         for field in fields:
-    #             add_value(field, visit, 0)
-
     return True

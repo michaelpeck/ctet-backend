@@ -44,6 +44,7 @@ class SummaryYearsSerializer(serializers.ModelSerializer):
 # Visit values
 class VisitValuesSerializer(serializers.ModelSerializer):
 
+
     class Meta:
         model = VisitValues
         fields = '__all__'
@@ -53,19 +54,27 @@ class PersonnelFieldsSerializer(serializers.ModelSerializer):
 
     values = VisitValuesSerializer(source='visitvalues_set', many=True, required=False)
 
+
     class Meta:
         model = PersonnelFields
         fields = '__all__'
 
 
-# Personnel
-class PersonnelSerializer(serializers.ModelSerializer):
+    def get_arm(self, obj):
+        # fields = {}
+        arm_num = obj.field.arm
+        # arms_s = TrialArmsSerializer(arms, many=True, required=False)
+        # for arm in arms_s.data:
+        #     flds = obj.personnelfields_set.filter(arm=arm['id'])
+        #     flds_s = PersonnelFieldsSerializer(flds, many=True, required=False)
+        #     fields[arm['id']] = flds_s.data
+        if arm_num:
+            return arm_num
+        else:
+            return []
 
-    fields = PersonnelFieldsSerializer(source='personnelfields_set', many=True, required=False)
 
-    class Meta:
-        model = Personnel
-        fields = '__all__'
+
 
 
 
@@ -130,12 +139,35 @@ class TrialArmsSerializer(serializers.ModelSerializer):
 
 
 
+# Personnel
+class PersonnelSerializer(serializers.ModelSerializer):
+
+    arm_fields = serializers.SerializerMethodField()
+    # fields = PersonnelFieldsSerializer(source='personnelfields_set', many=True, required=False)
+
+    class Meta:
+        model = Personnel
+        fields = '__all__'
+
+    def get_arm_fields(self, obj):
+        fields = {}
+        arms = obj.instance.trialarms_set
+        arms_s = TrialArmsSerializer(arms, many=True, required=False)
+        for arm in arms_s.data:
+            flds = obj.personnelfields_set.filter(arm=arm['id'])
+            flds_s = PersonnelFieldsSerializer(flds, many=True, required=False)
+            fields[arm['id']] = flds_s.data
+        if arms_s:
+            return fields
+        else:
+            return []
+
+
+
 # Clinical trial effort instance
 class CTEffortSerializer(serializers.ModelSerializer):
     #
     cycles = serializers.SerializerMethodField()
-    pre_cycles = serializers.SerializerMethodField()
-    post_cycles = serializers.SerializerMethodField()
     complexity = serializers.SerializerMethodField()
 
 
@@ -165,22 +197,6 @@ class CTEffortSerializer(serializers.ModelSerializer):
         else:
             return []
 
-
-    def get_pre_cycles(self, obj):
-        cycles = obj.cycles_set.filter(type_id__in = [1, 2])
-        cycles_s = CyclesSerializer(cycles, many=True, required=False)
-        if cycles_s:
-            return cycles_s.data
-        else:
-            return []
-
-    def get_post_cycles(self, obj):
-        cycles = obj.cycles_set.filter(type_id__in = [4, 5])
-        cycles_s = CyclesSerializer(cycles, many=True, required=False)
-        if cycles_s:
-            return cycles_s.data
-        else:
-            return []
 
     def get_complexity(self, obj):
         if Complexity.objects.filter(instance=obj.id).exists():

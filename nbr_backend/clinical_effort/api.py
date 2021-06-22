@@ -295,10 +295,11 @@ class PersonnelViewSet(viewsets.ModelViewSet):
 
         # amount
         amount = request.data['amount']
+        arm = request.data['arm']
 
         # Run person update function
         for field in range(amount):
-            new_field = add_field(project_id=proj.id, person_id=id)
+            new_field = add_field(project_id=proj.id, person_id=id, arm_id=arm)
 
         # Retrieve updated project
         project = CTEffort.objects.get(id=proj.id)
