@@ -61,20 +61,11 @@ class PersonnelFieldsSerializer(serializers.ModelSerializer):
 
 
     def get_arm(self, obj):
-        # fields = {}
         arm_num = obj.field.arm
-        # arms_s = TrialArmsSerializer(arms, many=True, required=False)
-        # for arm in arms_s.data:
-        #     flds = obj.personnelfields_set.filter(arm=arm['id'])
-        #     flds_s = PersonnelFieldsSerializer(flds, many=True, required=False)
-        #     fields[arm['id']] = flds_s.data
         if arm_num:
             return arm_num
         else:
             return []
-
-
-
 
 
 
@@ -138,12 +129,10 @@ class TrialArmsSerializer(serializers.ModelSerializer):
 
 
 
-
 # Personnel
 class PersonnelSerializer(serializers.ModelSerializer):
 
     arm_fields = serializers.SerializerMethodField()
-    # fields = PersonnelFieldsSerializer(source='personnelfields_set', many=True, required=False)
 
     class Meta:
         model = Personnel
@@ -166,36 +155,17 @@ class PersonnelSerializer(serializers.ModelSerializer):
 
 # Clinical trial effort instance
 class CTEffortSerializer(serializers.ModelSerializer):
-    #
-    cycles = serializers.SerializerMethodField()
+
     complexity = serializers.SerializerMethodField()
+    arms = serializers.SerializerMethodField()
 
-
-    arms = TrialArmsSerializer(source='trialarms_set', many=True, required=False)
+    # arms = TrialArmsSerializer(source='trialarms_set', many=True, required=False)
     people = PersonnelSerializer(source='personnel_set', many=True, required=False)
     years = SummaryYearsSerializer(source='summaryyears_set', many=True, required=False)
 
     class Meta:
         model = CTEffort
         fields = '__all__'
-
-    def get_cycles(self, obj):
-        pre = obj.cycles_set.filter(type_id__in = [1, 2])
-        pre_s = CyclesSerializer(pre, many=True, required=False)
-        post = obj.cycles_set.filter(type_id__in = [4, 5])
-        post_s = CyclesSerializer(post, many=True, required=False)
-        arms = obj.trialarms_set
-        arms_s = TrialArmsSerializer(arms, many=True, required=False)
-        arm_cycles=[]
-        for arm in arms_s.data:
-            # print(arm["cycles"])
-            for cycle in arm["cycles"]:
-                arm_cycles.append(cycle)
-        cycles = pre_s.data + arm_cycles + post_s.data
-        if cycles:
-            return cycles
-        else:
-            return []
 
 
     def get_complexity(self, obj):
@@ -205,6 +175,9 @@ class CTEffortSerializer(serializers.ModelSerializer):
         else:
             return []
 
+    def get_arms(self, obj):
+        arms = obj.trialarms_set.all().order_by('type')
+        return TrialArmsSerializer(arms, many=True, required=False).data
 
 
 # Cycle types

@@ -56,7 +56,8 @@ class CTEffortViewSet(viewsets.ModelViewSet):
     def add_arm(self, request, id=None):
 
         # Create arm
-        arm = add_arm(name='New Arm', proj_id=id)
+        arm_cycles = ['standard', 'custom']
+        arm = add_arm(name='New Arm', cycle_names=arm_cycles, type_id=2, proj_id=id)
 
         # Retrieve updated project
         project = CTEffort.objects.get(id=id)
@@ -151,7 +152,6 @@ class TrialArmsViewSet(viewsets.ModelViewSet):
         # Get project
         arm = TrialArms.objects.filter(id=id)
         proj_id = arm[0].instance
-        print(proj_id.id)
 
         # Create arm
         cycle = add_cycle(type='custom', proj_id=proj_id.id, arm_id=id)
@@ -161,7 +161,7 @@ class TrialArmsViewSet(viewsets.ModelViewSet):
         p_serializer = CTEffortSerializer(project, many=False)
 
         return Response(p_serializer.data, status=200)
-        # return Response('yo', status=200)
+
 
     @action(detail=False, methods=['GET'])
     def new_cycle(self, request, id=None):
