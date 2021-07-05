@@ -28,4 +28,4 @@ def add_arm(name, cycle_names, type_id, proj_id=None):
         add_cycle(type=cycle, proj_id=proj_id, arm_id=arm.id)
 
 
-    return True
+    return arm

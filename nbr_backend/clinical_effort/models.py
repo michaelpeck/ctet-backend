@@ -39,6 +39,7 @@ class TrialArmTypes(models.Model):
         db_table = 'trial_arm_types'
 
 
+
 # Cycle types model
 class CycleTypes(models.Model):
     id = models.AutoField(primary_key=True)
@@ -105,12 +106,14 @@ class TrialArms(models.Model):
     instance = models.ForeignKey('CTEffort',on_delete=models.CASCADE,)
     type = models.ForeignKey('TrialArmTypes',on_delete=models.CASCADE, null=True)
     name = models.CharField(max_length=32, blank=True, null=True)
+    estimated_duration = models.FloatField(blank=True, default=0)
     updated = models.DateTimeField(auto_now=True)
     updated_by = models.IntegerField(blank=True, null=True)
 
     class Meta:
         managed = True
         db_table = 'trial_arms'
+        ordering = ['type']
 
 
 # Personnel field
@@ -124,19 +127,27 @@ class PersonnelFields(models.Model):
         managed = True
         db_table = 'personnel_fields'
 
-# Summary years model
-class SummaryYears(models.Model):
+# Years model
+class Years(models.Model):
     id = models.AutoField(primary_key=True)
     instance = models.ForeignKey('CTEffort',on_delete=models.CASCADE,)
     name = models.CharField(max_length=32, blank=True, null=True, default = 'Year')
-    number = models.IntegerField(blank=True, null=True)
-    screen = models.IntegerField(blank=True, null=True, default=0)
-    treatment = models.IntegerField(blank=True, null=True, default=0)
-    follow_up = models.IntegerField(blank=True, null=True, default=0)
 
     class Meta:
         managed = True
-        db_table = 'summary_years'
+        db_table = 'years'
+
+# Year value
+class YearValues(models.Model):
+    id = models.AutoField(primary_key=True)
+    year = models.ForeignKey('Years',on_delete=models.CASCADE,)
+    arm = models.ForeignKey('TrialArms',on_delete=models.CASCADE,)
+    value = models.FloatField(blank=True, default=0)
+
+    class Meta:
+        managed = True
+        db_table = 'year_values'
+        ordering = ['arm__type']
 
 # Cycles model
 class Cycles(models.Model):
@@ -180,6 +191,7 @@ class VisitValues(models.Model):
     class Meta:
         managed = True
         db_table = 'visit_values'
+        ordering = ['visit__cycle']
 
 ## COMPLEXITY
 # Complexity model

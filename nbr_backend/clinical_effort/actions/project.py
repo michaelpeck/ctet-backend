@@ -15,9 +15,6 @@ def setup_project(object, id=None):
     # Add people
     add_default_people(id)
 
-    # Add years
-    add_default_years(id)
-
     # Create project pre cycles
     pre_cycles = ['pre-screening', 'screening']
     add_arm(name='Screening', cycle_names=pre_cycles, type_id=1, proj_id=id)
@@ -29,6 +26,9 @@ def setup_project(object, id=None):
     # Create project post cycles
     post_cycles = ['end-of-treatment', 'follow-up']
     add_arm(name='Follow-up', cycle_names=post_cycles, type_id=3, proj_id=id)
+
+    # Add years
+    add_default_years(id)
 
 
     project = CTEffort.objects.get(id=id)
