@@ -11,15 +11,26 @@ import json
 import io
 import hashlib
 
-from clinical_effort.models import Complexity, ComplexityValues, ComplexityTypes, SummaryYears
+from clinical_effort.models import Complexity, ComplexityValues, ComplexityTypes, Years, YearValues
 from clinical_effort.models import CTEffort, CycleTypes, PersonnelTypes, TrialArms, Cycles, Visits, VisitValues, Personnel, PersonnelFields
-from .serializers import CTEffortSerializer, CycleTypesSerializer, PersonnelTypesSerializer, TrialArmsSerializer, CyclesSerializer, VisitsSerializer, VisitValuesSerializer, PersonnelSerializer, PersonnelFieldsSerializer, ComplexityValuesSerializer, ComplexitySerializer, ComplexityTypesSerializer, SummaryYearsSerializer
+from .serializers import CTEffortSerializer, BaseCTEffortSerializer, CycleTypesSerializer, PersonnelTypesSerializer, TrialArmsSerializer, CyclesSerializer, VisitsSerializer, VisitValuesSerializer, PersonnelSerializer, PersonnelFieldsSerializer, ComplexityValuesSerializer, ComplexitySerializer, ComplexityTypesSerializer, YearsSerializer, YearValuesSerializer
 
 from clinical_effort.actions.project import setup_project
 from clinical_effort.actions.people import add_person, update_person, add_field, add_new_person_fields
 from clinical_effort.actions.arms import add_arm
 from clinical_effort.actions.cycles import add_cycle, update_cycle
 from clinical_effort.actions.complexity import create_complexity
+from clinical_effort.actions.years import add_year_value, add_default_years
+
+# Base clinical trial effort Viewset (no serializer fields)
+class BaseCTEffortViewSet(viewsets.ModelViewSet):
+
+    permission_classes = [
+        permissions.AllowAny,
+    ]
+    queryset = CTEffort.objects.all()
+    serializer_class = BaseCTEffortSerializer
+    lookup_field = 'id'
 
 # Clinical trial effort Viewset
 class CTEffortViewSet(viewsets.ModelViewSet):
@@ -58,6 +69,11 @@ class CTEffortViewSet(viewsets.ModelViewSet):
         # Create arm
         arm_cycles = ['standard', 'custom']
         arm = add_arm(name='New Arm', cycle_names=arm_cycles, type_id=2, proj_id=id)
+
+        # Add years for arm
+        years = CTEffort.objects.get(id=id).years_set.all()
+        for year in years:
+            add_year_value(year=year, arm=arm)
 
         # Retrieve updated project
         project = CTEffort.objects.get(id=id)
@@ -200,15 +216,42 @@ class CyclesViewSet(viewsets.ModelViewSet):
         return Response(p_serializer.data, status=200)
 
 
-# Summary years Viewset
-class SummaryYearsViewSet(viewsets.ModelViewSet):
+# Years Viewset
+class YearsViewSet(viewsets.ModelViewSet):
 
     permission_classes = [
         permissions.AllowAny,
     ]
-    queryset = SummaryYears.objects.all()
-    serializer_class = SummaryYearsSerializer
+    queryset = Years.objects.all()
+    serializer_class = YearsSerializer
     lookup_field = 'id'
+
+    @action(detail=True, methods=['GET'])
+    def add_year(self, request, id=None):
+
+        # Get project
+        # year = Years.objects.get(id=id)
+        proj = CTEffort.objects.get(id=id)
+
+        # Create arm
+        new_year = add_default_years(proj_id=id)
+
+        # Retrieve updated project
+        project = CTEffort.objects.get(id=id)
+        p_serializer = CTEffortSerializer(project, many=False)
+
+        return Response(p_serializer.data, status=200)
+
+# Year values Viewset
+class YearValuesViewSet(viewsets.ModelViewSet):
+
+    permission_classes = [
+        permissions.AllowAny,
+    ]
+    queryset = YearValues.objects.all()
+    serializer_class = YearValuesSerializer
+    lookup_field = 'id'
+
 
 # Clinical trial instance visits Viewset
 class VisitsViewSet(viewsets.ModelViewSet):
