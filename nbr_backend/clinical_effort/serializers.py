@@ -202,7 +202,7 @@ class BaseCTEffortSerializer(serializers.ModelSerializer):
         return obj.trialarms_set.count()
 
     def get_number_people(self, obj):
-        return obj.trialarms_set.count()
+        return obj.personnel_set.count()
 
 # Cycle types
 class CycleTypesSerializer(serializers.ModelSerializer):

@@ -136,6 +136,8 @@ USE_TZ = True
 
 STATIC_ROOT = '/nbr_backend/static/'
 STATIC_URL = '/static/'
+MEDIA_ROOT = '/media/'
+STATIC_URL = '/files/'
 
 # Email settings
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'

@@ -22,6 +22,8 @@ from clinical_effort.actions.cycles import add_cycle, update_cycle
 from clinical_effort.actions.complexity import create_complexity
 from clinical_effort.actions.years import add_year_value, add_default_years
 
+from clinical_effort.exports.exports import create_export
+
 # Base clinical trial effort Viewset (no serializer fields)
 class BaseCTEffortViewSet(viewsets.ModelViewSet):
 
@@ -89,6 +91,18 @@ class CTEffortViewSet(viewsets.ModelViewSet):
 
         # Add fields for arms
         add_new_person_fields(proj_id=id, person=person)
+
+        # Retrieve updated project
+        project = CTEffort.objects.get(id=id)
+        p_serializer = self.serializer_class(project, many=False)
+
+        return Response(p_serializer.data, status=200)
+
+    @action(detail=True, methods=['GET'])
+    def export(self, request, id=None):
+
+        # Create export file
+        export_obj = create_export(id=id)
 
         # Retrieve updated project
         project = CTEffort.objects.get(id=id)
