@@ -134,10 +134,10 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
-STATIC_ROOT = '/nbr_backend/static/'
-STATIC_URL = '/static/'
-MEDIA_ROOT = '/media/'
-STATIC_URL = '/files/'
+STATIC_ROOT = 'nbr_backend/static/'
+STATIC_URL = 'static/'
+MEDIA_ROOT = 'media/'
+MEDIA_URL = 'files/'
 
 # Email settings
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'

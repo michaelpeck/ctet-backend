@@ -6,9 +6,11 @@ from rest_framework import viewsets, permissions
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.parsers import JSONParser
+from django.http import HttpResponse, Http404
 
 import json
 import io
+import os
 import hashlib
 
 from clinical_effort.models import Complexity, ComplexityValues, ComplexityTypes, Years, YearValues
@@ -22,7 +24,7 @@ from clinical_effort.actions.cycles import add_cycle, update_cycle
 from clinical_effort.actions.complexity import create_complexity
 from clinical_effort.actions.years import add_year_value, add_default_years
 
-from clinical_effort.exports.exports import create_export
+from clinical_effort.exports.export_project import create_export
 
 # Base clinical trial effort Viewset (no serializer fields)
 class BaseCTEffortViewSet(viewsets.ModelViewSet):
@@ -102,13 +104,23 @@ class CTEffortViewSet(viewsets.ModelViewSet):
     def export(self, request, id=None):
 
         # Create export file
-        export_obj = create_export(id=id)
+        print(id)
+        export_path = create_export(id=id)
+        return_obj = {}
+        return_obj['path'] = export_path
 
-        # Retrieve updated project
-        project = CTEffort.objects.get(id=id)
-        p_serializer = self.serializer_class(project, many=False)
+        # if os.path.exists(export_path):
+        #     with open(export_path, 'rb') as fh:
+        #         response = HttpResponse(fh.read(), content_type="application/vnd.ms-excel")
+        #         response['Content-Disposition'] = 'attachment; filename=' + os.path.basename(export_path)
+        #         return response
+        # raise Http404
 
-        return Response(p_serializer.data, status=200)
+        # # Retrieve updated project
+        # project = CTEffort.objects.get(id=id)
+        # p_serializer = self.serializer_class(project, many=False)
+        #
+        return Response(return_obj, status=200)
 
 
 # Complexity Viewset
