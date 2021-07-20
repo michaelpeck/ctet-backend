@@ -18,7 +18,7 @@ from clinical_effort.models import CTEffort, CycleTypes, PersonnelTypes, TrialAr
 from .serializers import CTEffortSerializer, BaseCTEffortSerializer, CycleTypesSerializer, PersonnelTypesSerializer, TrialArmsSerializer, CyclesSerializer, VisitsSerializer, VisitValuesSerializer, PersonnelSerializer, PersonnelFieldsSerializer, ComplexityValuesSerializer, ComplexitySerializer, ComplexityTypesSerializer, YearsSerializer, YearValuesSerializer
 
 from clinical_effort.actions.project import setup_project
-from clinical_effort.actions.people import add_person, update_person, add_field, add_new_person_fields
+from clinical_effort.actions.people import add_person, update_person, add_field, add_new_person_fields, change_type
 from clinical_effort.actions.arms import add_arm
 from clinical_effort.actions.cycles import add_cycle, update_cycle
 from clinical_effort.actions.complexity import create_complexity
@@ -316,13 +316,13 @@ class PersonnelFieldsViewSet(viewsets.ModelViewSet):
         # Get field
         field = self.get_object()
 
+        # Delete field
+        field.delete()
+
         # Get instance cycles
         instance = field.person.instance
         instance_s = CTEffortSerializer(instance, many=False)
         cycles = instance_s.data['cycles']
-
-        # Delete field
-        field.delete()
 
 
         return Response(cycles, status=200)
@@ -372,6 +372,22 @@ class PersonnelViewSet(viewsets.ModelViewSet):
 
         # Retrieve updated project
         project = CTEffort.objects.get(id=proj.id)
+        p_serializer = CTEffortSerializer(project, many=False)
+
+        return Response(p_serializer.data, status=200)
+
+    @action(detail=True, methods=['PUT'])
+    def change_type(self, request, id=None):
+
+        # Get project
+        person = Personnel.objects.filter(id=id)
+        proj_id = person[0].instance
+
+        # Run person update function
+        change_type(object=request.data, proj_id=proj_id.id, person_id=id)
+
+        # Retrieve updated project
+        project = CTEffort.objects.get(id=proj_id.id)
         p_serializer = CTEffortSerializer(project, many=False)
 
         return Response(p_serializer.data, status=200)

@@ -45,6 +45,25 @@ def update_person(object, person_id=None, proj_id=None):
     return True
 
 
+# Update cycle visit instances
+def change_type(object, person_id=None, proj_id=None):
+
+    # Retrieve person
+    person = Personnel.objects.get(id=person_id)
+
+    # Update person
+    person.type = PersonnelTypes.objects.get(id=object['type'])
+    person.save()
+
+    # Delete old fields
+    person.personnelfields_set.all().delete()
+
+    # Add new fields
+    add_new_person_fields(proj_id=proj_id, person=person)
+
+    return True
+
+
 # Add field
 def add_field(project_id=None, person_id=None, arm_id=None):
 
