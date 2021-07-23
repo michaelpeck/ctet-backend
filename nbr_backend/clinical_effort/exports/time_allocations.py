@@ -53,6 +53,42 @@ def edit_summary_df(df, values, person):
             df.at[person.id, str(key)] = val
     return df
 
+# Get hours per person per arm
+def get_person_arm_hours_df(proj_id):
+
+    # Get project
+    project = CTEffort.objects.get(id=proj_id)
+
+    # Get arms and people
+    arms = project.trialarms_set.all()
+    people = project.personnel_set.all()
+
+    # Dataframe
+    # Assemble cols
+    index = []
+    for person in people:
+        index.append(person.id)
+
+    cols = ['person']
+    for arm in arms:
+        cols.append(arm.id)
+
+    # Add values
+    df = pd.DataFrame(index=index, columns=cols)
+    for person in people:
+        df.at[person.id, 'person'] = person.name
+        for arm in arms:
+            df.at[person.id, arm.id] = 0
+
+    return df
+
+# Add sum values to summary df
+def edit_person_arm_hours_df(df, values, person, arm):
+    for key, val in values.items():
+        if val != 'Sum':
+            df.at[person.id, arm.id] = df.loc[person.id, arm.id] + val
+    return df
+
 # Subject summary df
 def get_subject_summary_df(summary, people, arms):
 
