@@ -12,6 +12,7 @@ import datetime
 # Clinical trial effort instance model
 class CTEffort(models.Model):
     id = models.AutoField(primary_key=True)
+    eid = models.CharField(max_length=32, blank=True, null=True)
     user = models.IntegerField(blank=True, null=True)
     protocol_number = models.CharField(max_length=32, blank=True, null=True)
     accounting_number = models.CharField(max_length=32, blank=True, null=True)
@@ -107,6 +108,8 @@ class TrialArms(models.Model):
     type = models.ForeignKey('TrialArmTypes',on_delete=models.CASCADE, null=True)
     name = models.CharField(max_length=32, blank=True, null=True)
     estimated_duration = models.FloatField(blank=True, default=0)
+    start_date = models.DateTimeField(auto_now=False, blank=True, null=True)
+    end_date = models.DateTimeField(auto_now=False, blank=True, null=True)
     updated = models.DateTimeField(auto_now=True)
     updated_by = models.IntegerField(blank=True, null=True)
 

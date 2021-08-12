@@ -123,6 +123,10 @@ def create_export(id):
         # row_index += person_arm_hours_df.shape[0] + 2
 
         # Summary table
+        summary_name = pd.DataFrame(columns=['Allocation Summary'])
+        summary_name.to_excel(writer, sheet_name='time_allocations', index=False, startrow=row_index)
+        worksheet_time.write(row_index, 0, summary_name.columns.values[0], header_format)
+        row_index += 1
         summary_df.to_excel(writer, sheet_name='time_allocations', index=False, startrow=row_index)
         summary_titles = ['']
         for col_num, value in enumerate(summary_df.columns.values):
@@ -135,6 +139,10 @@ def create_export(id):
         row_index += summary_df.shape[0] + 2
 
         # Subject summary
+        summary_name = pd.DataFrame(columns=['Per Subject Values'])
+        summary_name.to_excel(writer, sheet_name='time_allocations', index=False, startrow=row_index)
+        worksheet_time.write(row_index, 0, summary_name.columns.values[0], header_format)
+        row_index += 1
         subject_summary_df = get_subject_summary_df(summary_df, people, arms)
         subject_summary_df.to_excel(writer, sheet_name='time_allocations', index=False, startrow=row_index)
         subject_summary_titles = ['Person', '12 Month Budget', 'Total Hours/Subject', 'Per Subject Effort']
@@ -143,6 +151,10 @@ def create_export(id):
         row_index += subject_summary_df.shape[0] + 2
 
         # Total summary
+        summary_name = pd.DataFrame(columns=['Total Effort Values'])
+        summary_name.to_excel(writer, sheet_name='time_allocations', index=False, startrow=row_index)
+        worksheet_time.write(row_index, 0, summary_name.columns.values[0], header_format)
+        row_index += 1
         total_summary_df = get_total_summary_df(id, subject_summary_df, people, arms)
         total_summary_df.to_excel(writer, sheet_name='time_allocations', index=False, startrow=row_index)
         total_summary_titles = ['Person', 'Total Hours Budgeted Subjects', 'Addl. Lump Sum Hours', 'Addl. Lump Sum Effort', 'Total Effort', 'Total Effort MIRIS Personnel Screen']
