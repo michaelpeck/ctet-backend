@@ -1,9 +1,0 @@
-Hi there, \n
-The following project is ready for your committee to review. \n\n
-
-Project: {{ title }}  \n
-PI: {{ pi }} \n
-RSP ID: {{ rsp_id }}  \n
-Committee: {{ committee }} \n
-
-\n\nProject Detail: {{ url }} \n
