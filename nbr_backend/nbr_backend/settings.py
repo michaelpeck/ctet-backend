@@ -12,12 +12,11 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 
 from pathlib import Path
 from decouple import config
-
-# import dj_database_url
+# from decouple import AutoConfig
+# config = AutoConfig(search_path='/opt/envs/my-project')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
@@ -28,8 +27,16 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', cast=bool, default=False)
 
-# Application definition
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/3.1/howto/static-files/
+STATIC_ROOT = 'nbr_backend/static/'
+STATIC_URL = 'static/'
 
+# Media files
+MEDIA_ROOT = 'media/'
+MEDIA_URL = 'files/'
+
+# Application definition
 INSTALLED_APPS = [
     'frontend.apps.FrontendConfig',
     'departments.apps.DepartmentsConfig',
@@ -152,25 +159,11 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
-
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'America/New_York'
-
 USE_I18N = True
-
 USE_L10N = True
-
 USE_TZ = True
-
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/3.1/howto/static-files/
-
-STATIC_ROOT = 'nbr_backend/static/'
-STATIC_URL = 'static/'
-MEDIA_ROOT = 'media/'
-MEDIA_URL = 'files/'
 
 # Email settings
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
