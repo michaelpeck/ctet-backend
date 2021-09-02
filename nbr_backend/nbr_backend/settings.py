@@ -11,12 +11,20 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
 from pathlib import Path
-from decouple import config
-# from decouple import AutoConfig
-# config = AutoConfig(search_path='/opt/envs/my-project')
+# from decouple import config
+from decouple import AutoConfig
+import os
+
+# Config
+# SUB_WEBROOT_DIR = Path(__file__).resolve().parent.parent.parent.parent / 'ctet-backend'
+# config = AutoConfig(search_path=SUB_WEBROOT_DIR)
+config = AutoConfig(search_path='/var/www/ctet-backend/')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Allowed hosts
+ALLOWED_HOSTS = ['ctet.nemoursresearch.org']
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
@@ -29,8 +37,8 @@ DEBUG = config('DEBUG', cast=bool, default=False)
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
-STATIC_ROOT = 'nbr_backend/static/'
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 
 # Media files
 MEDIA_ROOT = 'media/'
@@ -175,12 +183,11 @@ EMAIL_HOST_USER = config('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 
 # HTTPS settings
-# SESSION_COOKIE_SECURE = True
-# CSRF_COOKIE_SECURE = True
-# SECURE_SSL_REDIRECT = True
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+SECURE_SSL_REDIRECT = True
 
 # HSTS settings
-# SECURE_HSTS_SECONDS = 31536000 # 1 year
-# SECURE_HSTS_PRELOAD = True
-# SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-
+SECURE_HSTS_SECONDS = 31536000 # 1 year
+SECURE_HSTS_PRELOAD = True
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
