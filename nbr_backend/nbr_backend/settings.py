@@ -39,7 +39,6 @@ MEDIA_URL = 'files/'
 # Application definition
 INSTALLED_APPS = [
     'frontend.apps.FrontendConfig',
-    'departments.apps.DepartmentsConfig',
     'clinical_effort.apps.ClinicalEffortConfig',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -86,7 +85,9 @@ WSGI_APPLICATION = 'nbr_backend.wsgi.application'
 REST_FRAMEWORK = {
     # other settings...
 
-    'DEFAULT_AUTHENTICATION_CLASSES': [],
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
     'DEFAULT_PERMISSION_CLASSES': [],
 }
 
@@ -131,10 +132,10 @@ SAML2_AUTH = {
         'BEFORE_LOGIN': 'path.to.your.login.hook.method',
     },
     'ASSERTION_URL': 'https://mysite.com', # Custom URL to validate incoming SAML requests against
-    'ENTITY_ID': 'https://mysite.com/saml2_auth/acs/', # Populates the Issuer element in authn request
+    'ENTITY_ID': 'https://ctet.nemoursresearch.org.com/saml2_auth/acs/', # Populates the Issuer element in authn request
     'NAME_ID_FORMAT': None, # Sets the Format property of authn NameIDPolicy element
     'USE_JWT': True, # Set this to True if you are running a Single Page Application (SPA) with Django Rest Framework (DRF), and are using JWT authentication to authorize client users
-    'FRONTEND_URL': 'https://myfrontendclient.com', # Redirect URL for the client if you are using JWT auth with DRF. See explanation below
+    'FRONTEND_URL': 'https://ctet.nemoursresearch.org', # Redirect URL for the client if you are using JWT auth with DRF. See explanation below
 }
 
 
@@ -183,4 +184,3 @@ EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 # SECURE_HSTS_SECONDS = 31536000 # 1 year
 # SECURE_HSTS_PRELOAD = True
 # SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-

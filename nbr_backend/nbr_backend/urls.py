@@ -8,6 +8,10 @@ from django.contrib import admin
 from django.urls import include, path, re_path
 from django.conf import settings
 from django.conf.urls.static import static
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+)
 
 import django_saml2_auth.views
 
@@ -25,7 +29,10 @@ urlpatterns = [
     # If you want to specific the after-login-redirect-URL, use parameter "?next=/the/path/you/want"
     # with this view.
     re_path(r'^admin/login/$', django_saml2_auth.views.signin),
-    path('api/', include('departments.urls')),
+
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+
     path('api/', include('clinical_effort.urls')),
     path('', include('frontend.urls')),
     path('admin/', admin.site.urls),
