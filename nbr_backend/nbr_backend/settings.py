@@ -116,33 +116,32 @@ DATABASES = {
 # SAML2
 SAML2_AUTH = {
     # Metadata is required, choose either remote url or local file path
-    'METADATA_AUTO_CONF_URL': 'https://login.microsoftonline.com/024838dd-df4f-4d57-aaaa-7d70f0f44039/federationmetadata/2007-06/federationmetadata.xml?appid=bdda2964-0770-4dce-bb16-f0e66c9d0686]',
-    'METADATA_LOCAL_FILE_PATH': '',
+    'METADATA_AUTO_CONF_URL': config('METADATA_AUTO_CONF_URL'),
 
     # Optional settings below
-    'DEFAULT_NEXT_URL': '/admin',  # Custom target redirect URL after the user get logged in. Default to /admin if not set. This setting will be overwritten if you have parameter ?next= specificed in the login URL.
-    'CREATE_USER': 'TRUE', # Create a new Django user when a new user logs in. Defaults to True.
+    'DEFAULT_NEXT_URL': config('DEFAULT_NEXT_URL'),  # Custom target redirect URL after the user get logged in. Default to /admin if not set. This setting will be overwritten if you have parameter ?next= specificed in the login URL.
+    'CREATE_USER': config('CREATE_USER'), # Create a new Django user when a new user logs in. Defaults to True.
     'NEW_USER_PROFILE': {
         'USER_GROUPS': [],  # The default group name when a new user logs in
-        'ACTIVE_STATUS': True,  # The default active status for new users
-        'STAFF_STATUS': True,  # The staff status for new users
-        'SUPERUSER_STATUS': False,  # The superuser status for new users
+        'ACTIVE_STATUS': config('ACTIVE_STATUS', cast=bool, default=True),  # The default active status for new users
+        'STAFF_STATUS': config('STAFF_STATUS', cast=bool, default=True),  # The staff status for new users
+        'SUPERUSER_STATUS': config('SUPERUSER_STATUS', cast=bool, default=False),  # The superuser status for new users
     },
     'ATTRIBUTES_MAP': {  # Change Email/UserName/FirstName/LastName to corresponding SAML2 userprofile attributes.
-        'email': 'Email',
-        'username': 'UserName',
-        'first_name': 'FirstName',
-        'last_name': 'LastName',
+        'email': config('ATTRIBUTES_MAP_EMAIL'),
+        'username': config('ATTRIBUTES_MAP_USERNAME'),
+        'first_name': config('ATTRIBUTES_MAP_FIRSTNAME'),
+        'last_name': config('ATTRIBUTES_MAP_LASTNAME'),
     },
     'TRIGGER': {
-        'CREATE_USER': 'path.to.your.new.user.hook.method',
-        'BEFORE_LOGIN': 'path.to.your.login.hook.method',
+        'CREATE_USER': config('CREATE_USER'),
+        'BEFORE_LOGIN': config('BEFORE_LOGIN'),
     },
-    'ASSERTION_URL': 'https://mysite.com', # Custom URL to validate incoming SAML requests against
-    'ENTITY_ID': 'https://mysite.com/saml2_auth/acs/', # Populates the Issuer element in authn request
-    'NAME_ID_FORMAT': None, # Sets the Format property of authn NameIDPolicy element
-    'USE_JWT': True, # Set this to True if you are running a Single Page Application (SPA) with Django Rest Framework (DRF), and are using JWT authentication to authorize client users
-    'FRONTEND_URL': 'https://ctet.nemoursresearch.org', # Redirect URL for the client if you are using JWT auth with DRF. See explanation below
+    'ASSERTION_URL': config('ASSERTION_URL'), # Custom URL to validate incoming SAML requests against
+    'ENTITY_ID': config('ENTITY_ID'), # Populates the Issuer element in authn request
+    'NAME_ID_FORMAT': config('NAME_ID_FORMAT'), # Sets the Format property of authn NameIDPolicy element
+    'USE_JWT': config('USE_JWT', cast=bool, default=True), # Set this to True if you are running a Single Page Application (SPA) with Django Rest Framework (DRF), and are using JWT authentication to authorize client users
+    'FRONTEND_URL': config('FRONTEND_URL'), # Redirect URL for the client if you are using JWT auth with DRF. See explanation below
 }
 
 
@@ -183,11 +182,11 @@ EMAIL_HOST_USER = config('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 
 # HTTPS settings
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
-SECURE_SSL_REDIRECT = True
+SESSION_COOKIE_SECURE = config('SESSION_COOKIE_SECURE', cast=bool, default=True)
+CSRF_COOKIE_SECURE = config('CSRF_COOKIE_SECURE', cast=bool, default=True)
+SECURE_SSL_REDIRECT = config('SECURE_SSL_REDIRECT', cast=bool, default=True)
 
 # HSTS settings
-SECURE_HSTS_SECONDS = 31536000 # 1 year
-SECURE_HSTS_PRELOAD = True
-SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_SECONDS = config('SECURE_HSTS_SECONDS', cast=int, default=31536000) # 1 year
+SECURE_HSTS_PRELOAD = config('SECURE_HSTS_PRELOAD', cast=bool, default=True)
+SECURE_HSTS_INCLUDE_SUBDOMAINS = config('SECURE_HSTS_INCLUDE_SUBDOMAINS', cast=bool, default=True)
