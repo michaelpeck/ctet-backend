@@ -116,8 +116,8 @@ DATABASES = {
 # SAML2
 SAML2_AUTH = {
     # Metadata is required, choose either remote url or local file path
-    'METADATA_AUTO_CONF_URL': '[The auto(dynamic) metadata configuration URL of SAML2]',
-    'METADATA_LOCAL_FILE_PATH': '[The metadata configuration file path]',
+    'METADATA_AUTO_CONF_URL': 'https://login.microsoftonline.com/024838dd-df4f-4d57-aaaa-7d70f0f44039/federationmetadata/2007-06/federationmetadata.xml?appid=bdda2964-0770-4dce-bb16-f0e66c9d0686]',
+    'METADATA_LOCAL_FILE_PATH': '',
 
     # Optional settings below
     'DEFAULT_NEXT_URL': '/admin',  # Custom target redirect URL after the user get logged in. Default to /admin if not set. This setting will be overwritten if you have parameter ?next= specificed in the login URL.
@@ -142,7 +142,7 @@ SAML2_AUTH = {
     'ENTITY_ID': 'https://mysite.com/saml2_auth/acs/', # Populates the Issuer element in authn request
     'NAME_ID_FORMAT': None, # Sets the Format property of authn NameIDPolicy element
     'USE_JWT': True, # Set this to True if you are running a Single Page Application (SPA) with Django Rest Framework (DRF), and are using JWT authentication to authorize client users
-    'FRONTEND_URL': 'https://myfrontendclient.com', # Redirect URL for the client if you are using JWT auth with DRF. See explanation below
+    'FRONTEND_URL': 'https://ctet.nemoursresearch.org', # Redirect URL for the client if you are using JWT auth with DRF. See explanation below
 }
 
 
