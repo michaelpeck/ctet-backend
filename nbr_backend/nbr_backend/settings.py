@@ -122,7 +122,7 @@ SAML2_AUTH = {
     'DEFAULT_NEXT_URL': config('DEFAULT_NEXT_URL'),  # Custom target redirect URL after the user get logged in. Default to /admin if not set. This setting will be overwritten if you have parameter ?next= specificed in the login URL.
     'CREATE_USER': config('CREATE_USER'), # Create a new Django user when a new user logs in. Defaults to True.
     'NEW_USER_PROFILE': {
-        'USER_GROUPS': [],  # The default group name when a new user logs in
+        'USER_GROUPS': [config('USER_GROUPS')],  # The default group name when a new user logs in
         'ACTIVE_STATUS': config('ACTIVE_STATUS', cast=bool, default=True),  # The default active status for new users
         'STAFF_STATUS': config('STAFF_STATUS', cast=bool, default=True),  # The staff status for new users
         'SUPERUSER_STATUS': config('SUPERUSER_STATUS', cast=bool, default=False),  # The superuser status for new users
@@ -132,10 +132,6 @@ SAML2_AUTH = {
         'username': config('ATTRIBUTES_MAP_USERNAME'),
         'first_name': config('ATTRIBUTES_MAP_FIRSTNAME'),
         'last_name': config('ATTRIBUTES_MAP_LASTNAME'),
-    },
-    'TRIGGER': {
-        'CREATE_USER': config('CREATE_USER'),
-        'BEFORE_LOGIN': config('BEFORE_LOGIN'),
     },
     'ASSERTION_URL': config('ASSERTION_URL'), # Custom URL to validate incoming SAML requests against
     'ENTITY_ID': config('ENTITY_ID'), # Populates the Issuer element in authn request
