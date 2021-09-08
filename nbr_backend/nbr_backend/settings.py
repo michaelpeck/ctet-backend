@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
     'django_saml2_auth',
+    'rest_framework_simplejwt',
 ]
 
 MIDDLEWARE = [

@@ -30,7 +30,7 @@ from clinical_effort.exports.export_project import create_export
 class BaseCTEffortViewSet(viewsets.ModelViewSet):
 
     permission_classes = [
-        permissions.AllowAny,
+        permissions.IsAuthenticated,
     ]
     queryset = CTEffort.objects.all()
     serializer_class = BaseCTEffortSerializer
@@ -40,7 +40,7 @@ class BaseCTEffortViewSet(viewsets.ModelViewSet):
 class CTEffortViewSet(viewsets.ModelViewSet):
 
     permission_classes = [
-        permissions.AllowAny,
+        permissions.IsAuthenticated,
     ]
     queryset = CTEffort.objects.all()
     serializer_class = CTEffortSerializer
@@ -136,7 +136,7 @@ class CTEffortViewSet(viewsets.ModelViewSet):
 class ComplexityTypesViewSet(viewsets.ModelViewSet):
 
     permission_classes = [
-        permissions.AllowAny,
+        permissions.IsAuthenticated,
     ]
     queryset = ComplexityTypes.objects.all()
     serializer_class = ComplexityTypesSerializer
@@ -146,7 +146,7 @@ class ComplexityTypesViewSet(viewsets.ModelViewSet):
 class ComplexityViewSet(viewsets.ModelViewSet):
 
     permission_classes = [
-        permissions.AllowAny,
+        permissions.IsAuthenticated,
     ]
     queryset = Complexity.objects.all()
     serializer_class = ComplexitySerializer
@@ -157,7 +157,7 @@ class ComplexityViewSet(viewsets.ModelViewSet):
 class ComplexityValuesViewSet(viewsets.ModelViewSet):
 
     permission_classes = [
-        permissions.AllowAny,
+        permissions.IsAuthenticated,
     ]
     queryset = ComplexityValues.objects.all()
     serializer_class = ComplexityValuesSerializer
@@ -169,7 +169,7 @@ class ComplexityValuesViewSet(viewsets.ModelViewSet):
 class CycleTypesViewSet(viewsets.ModelViewSet):
 
     permission_classes = [
-        permissions.AllowAny,
+        permissions.IsAuthenticated,
     ]
     queryset = CycleTypes.objects.all()
     serializer_class = CycleTypesSerializer
@@ -180,7 +180,7 @@ class CycleTypesViewSet(viewsets.ModelViewSet):
 class PersonnelTypesViewSet(viewsets.ModelViewSet):
 
     permission_classes = [
-        permissions.AllowAny,
+        permissions.IsAuthenticated,
     ]
     queryset = PersonnelTypes.objects.all()
     serializer_class = PersonnelTypesSerializer
@@ -191,7 +191,7 @@ class PersonnelTypesViewSet(viewsets.ModelViewSet):
 class TrialArmsViewSet(viewsets.ModelViewSet):
 
     permission_classes = [
-        permissions.AllowAny,
+        permissions.IsAuthenticated,
     ]
     queryset = TrialArms.objects.all()
     serializer_class = TrialArmsSerializer
@@ -227,7 +227,7 @@ class TrialArmsViewSet(viewsets.ModelViewSet):
 class CyclesViewSet(viewsets.ModelViewSet):
 
     permission_classes = [
-        permissions.AllowAny,
+        permissions.IsAuthenticated,
     ]
     queryset = Cycles.objects.all()
     serializer_class = CyclesSerializer
@@ -255,7 +255,7 @@ class CyclesViewSet(viewsets.ModelViewSet):
 class YearsViewSet(viewsets.ModelViewSet):
 
     permission_classes = [
-        permissions.AllowAny,
+        permissions.IsAuthenticated,
     ]
     queryset = Years.objects.all()
     serializer_class = YearsSerializer
@@ -281,7 +281,7 @@ class YearsViewSet(viewsets.ModelViewSet):
 class YearValuesViewSet(viewsets.ModelViewSet):
 
     permission_classes = [
-        permissions.AllowAny,
+        permissions.IsAuthenticated,
     ]
     queryset = YearValues.objects.all()
     serializer_class = YearValuesSerializer
@@ -292,7 +292,7 @@ class YearValuesViewSet(viewsets.ModelViewSet):
 class VisitsViewSet(viewsets.ModelViewSet):
 
     permission_classes = [
-        permissions.AllowAny,
+        permissions.IsAuthenticated,
     ]
     queryset = Visits.objects.all()
     serializer_class = VisitsSerializer
@@ -303,7 +303,7 @@ class VisitsViewSet(viewsets.ModelViewSet):
 class VisitValuesViewSet(viewsets.ModelViewSet):
 
     permission_classes = [
-        permissions.AllowAny,
+        permissions.IsAuthenticated,
     ]
     queryset = VisitValues.objects.all()
     serializer_class = VisitValuesSerializer
@@ -313,7 +313,7 @@ class VisitValuesViewSet(viewsets.ModelViewSet):
 class PersonnelFieldsViewSet(viewsets.ModelViewSet):
 
     permission_classes = [
-        permissions.AllowAny,
+        permissions.IsAuthenticated,
     ]
     queryset = PersonnelFields.objects.all()
     serializer_class = PersonnelFieldsSerializer
@@ -341,7 +341,7 @@ class PersonnelFieldsViewSet(viewsets.ModelViewSet):
 class PersonnelViewSet(viewsets.ModelViewSet):
 
     permission_classes = [
-        permissions.AllowAny,
+        permissions.IsAuthenticated,
     ]
     queryset = Personnel.objects.all()
     serializer_class = PersonnelSerializer
