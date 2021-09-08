@@ -5,6 +5,7 @@ from . import views
 
 urlpatterns = [
     path('', views.index),
+    path('app', views.index),
     re_path('effort', views.index),
     re_path('effort/', views.index),
     re_path('project', views.index),

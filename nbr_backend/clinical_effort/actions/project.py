@@ -12,6 +12,8 @@ def setup_project(object, id=None):
     # Get project
     project = CTEffort.objects.get(id=id)
 
+    # Add eid
+
     # Add people
     add_default_people(id)
 
@@ -37,3 +39,11 @@ def setup_project(object, id=None):
 
 # Update all project cycles
 # def update_cycles(object, id=None):
+
+# Create project eid ('CTET[YY]-[user]-[#userproject]')
+def create_project_eid(project):
+
+    # Get user
+
+    # Get year
+    return

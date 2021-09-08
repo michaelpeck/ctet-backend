@@ -47,7 +47,6 @@ MEDIA_URL = 'files/'
 # Application definition
 INSTALLED_APPS = [
     'frontend.apps.FrontendConfig',
-    'departments.apps.DepartmentsConfig',
     'clinical_effort.apps.ClinicalEffortConfig',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -58,6 +57,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
     'django_saml2_auth',
+    'rest_framework_simplejwt',
 ]
 
 MIDDLEWARE = [
@@ -94,7 +94,9 @@ WSGI_APPLICATION = 'nbr_backend.wsgi.application'
 REST_FRAMEWORK = {
     # other settings...
 
-    'DEFAULT_AUTHENTICATION_CLASSES': [],
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
     'DEFAULT_PERMISSION_CLASSES': [],
 }
 
