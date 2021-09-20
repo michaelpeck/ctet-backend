@@ -98,10 +98,37 @@ def create_export(id):
             worksheet_time.write(row_index, 0, person_name.columns.values[0], header_format)
             row_index += 1
             for arm in arms:
+                # Arm names
                 arm_name = pd.DataFrame(columns=[arm.name])
                 arm_name.to_excel(writer, sheet_name='time_allocations', index=False, startrow=row_index)
                 worksheet_time.write(row_index, 0, arm_name.columns.values[0], header_format)
                 row_index += 1
+                # Cycles & Visits
+                cycles = arm.cycles_set.all()
+                cycle_cols = ['Cycle (#)']
+                visit_cols = ['Visit #']
+                i = 0
+                for cycle in cycles:
+                    i += 1
+                    visits = cycle.visits_set.all()
+                    j = 0
+                    for visit in visits:
+                        j += 1
+                        cycle_cols.append(cycle.name + ' (' + i + ')')
+                        visit_cols.append(str(j))
+                # Cycles
+                cycles_df = pd.DataFrame(columns=cycle_cols)
+                cycles_df.to_excel(writer, sheet_name='time_allocations', index=False, startrow=row_index)
+                for col_num, value in enumerate(cycles_df.columns.values):
+                    worksheet_time.write(row_index, col_num, value, header_format)
+                row_index += 1
+                # Visits
+                visits_df = pd.DataFrame(columns=visit_cols)
+                visits_df.to_excel(writer, sheet_name='time_allocations', index=False, startrow=row_index)
+                for col_num, value in enumerate(visits_df.columns.values):
+                    worksheet_time.write(row_index, col_num, value, header_format)
+                row_index += 1
+                # Person arm df
                 p_a_df = get_person_arm_df(id, person.id, arm.id)
                 p_a_df.to_excel(writer, sheet_name='time_allocations', index=False, startrow=row_index)
                 # Format
@@ -127,6 +154,34 @@ def create_export(id):
         summary_name.to_excel(writer, sheet_name='time_allocations', index=False, startrow=row_index)
         worksheet_time.write(row_index, 0, summary_name.columns.values[0], header_format)
         row_index += 1
+        # Add arm and cycle headers
+        arm_cols = ['Arm']
+        cycle_cols = ['Cycle (#)-(Visit #)']
+        for arm in arms:
+            cycles = arm.cycles_set.all()
+            i = 0
+            for cycle in cycles:
+                i += 1
+                visits = cycle.visits_set.all()
+                j = 0
+                for visit in visits:
+                    j += 1
+                    arm_cols.append(arm.name)
+                    cycle_cols.append(cycle.name + ' (' + i + ')-(' + j + ')')
+
+        # Arms
+        arms_df = pd.DataFrame(columns=arm_cols)
+        arms_df.to_excel(writer, sheet_name='time_allocations', index=False, startrow=row_index)
+        for col_num, value in enumerate(arms_df.columns.values):
+            worksheet_time.write(row_index, col_num, value, header_format)
+        row_index += 1
+        # Cycles
+        cycles_df = pd.DataFrame(columns=cycle_cols)
+        cycles_df.to_excel(writer, sheet_name='time_allocations', index=False, startrow=row_index)
+        for col_num, value in enumerate(cycles_df.columns.values):
+            worksheet_time.write(row_index, col_num, value, header_format)
+        row_index += 1
+        # Summary table
         summary_df.to_excel(writer, sheet_name='time_allocations', index=False, startrow=row_index)
         summary_titles = ['']
         for col_num, value in enumerate(summary_df.columns.values):

@@ -55,4 +55,4 @@ def update_cycle(object, cycle_id=None, proj_id=None):
                 add_visit(cycle_no=i, visit_no=j, cycle_id=cycle_id, proj_id=proj_id)
 
 
-    return True
+    return cycle

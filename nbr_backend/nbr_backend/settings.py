@@ -41,13 +41,14 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 
 # Media files
-MEDIA_ROOT = 'media/'
-MEDIA_URL = 'files/'
+MEDIA_URL = '/files/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 
 # Application definition
 INSTALLED_APPS = [
     'frontend.apps.FrontendConfig',
     'clinical_effort.apps.ClinicalEffortConfig',
+    'authentication.apps.AuthConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

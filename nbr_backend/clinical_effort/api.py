@@ -32,9 +32,17 @@ class BaseCTEffortViewSet(viewsets.ModelViewSet):
     permission_classes = [
         permissions.IsAuthenticated,
     ]
-    queryset = CTEffort.objects.all()
+    # queryset = CTEffort.objects.all()
     serializer_class = BaseCTEffortSerializer
     lookup_field = 'id'
+
+    def get_queryset(self):
+        """
+        This view should return a list of all the purchases
+        for the currently authenticated user.
+        """
+        user = self.request.user
+        return CTEffort.objects.filter(user=user)
 
 # Clinical trial effort Viewset
 class CTEffortViewSet(viewsets.ModelViewSet):
@@ -50,9 +58,11 @@ class CTEffortViewSet(viewsets.ModelViewSet):
     def new(self, request, id=None):
 
         # Save project
-        serializer = self.serializer_class(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
+        new_project = request.data
+        new_project['user'] = self.request.user.id
+        serializer = self.serializer_class(data=new_project)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
 
         # Call setup project action
         add_proj = setup_project(request.data, serializer.data['id'])
@@ -75,13 +85,17 @@ class CTEffortViewSet(viewsets.ModelViewSet):
 
         # Create arm
         arm_cycles = []
+        arm_name = ''
         if type == 1:
             arm_cycles = ['pre-screening', 'screening']
+            arm_name = 'New Screening'
         elif type == 2:
             arm_cycles = ['standard', 'custom']
+            arm_name = 'New Arm'
         else:
             arm_cycles = ['end-of-treatment', 'follow-up']
-        arm = add_arm(name='New Arm', cycle_names=arm_cycles, type_id=type, proj_id=id)
+            arm_name = 'New Follow-up'
+        arm = add_arm(name=arm_name, cycle_names=arm_cycles, type_id=type, proj_id=id)
 
         # Add years for arm
         years = CTEffort.objects.get(id=id).years_set.all()
@@ -214,12 +228,12 @@ class TrialArmsViewSet(viewsets.ModelViewSet):
         return Response(p_serializer.data, status=200)
 
 
-    @action(detail=False, methods=['GET'])
-    def new_cycle(self, request, id=None):
-        arm = self.queryset.filter(id=id)[0]
-        add_cycle(type='custom', proj_id=arm.instance, arm_id=id)
-
-        return Response('Worked', status=200)
+    # @action(detail=False, methods=['GET'])
+    # def new_cycle(self, request, id=None):
+    #     arm = self.queryset.filter(id=id)[0]
+    #     add_cycle(type='custom', proj_id=arm.instance, arm_id=id)
+    #
+    #     return Response('Worked', status=200)
 
 
 
@@ -243,12 +257,13 @@ class CyclesViewSet(viewsets.ModelViewSet):
 
         # Create arm
         cycle = update_cycle(object=request.data, proj_id=proj_id.id, cycle_id=id)
+        c_serializer = self.serializer_class(cycle)
 
         # Retrieve updated project
-        project = CTEffort.objects.get(id=proj_id.id)
-        p_serializer = CTEffortSerializer(project, many=False)
+        # project = CTEffort.objects.get(id=proj_id.id)
+        # p_serializer = CTEffortSerializer(project, many=False)
 
-        return Response(p_serializer.data, status=200)
+        return Response(c_serializer.data, status=200)
 
 
 # Years Viewset
@@ -353,14 +368,14 @@ class PersonnelViewSet(viewsets.ModelViewSet):
         # Get project
         person = Personnel.objects.filter(id=id)
         proj_id = person[0].instance
-        print(proj_id.id)
 
         # Run person update function
         new_person = update_person(object=request.data, proj_id=proj_id.id, person_id=id)
+        p_serializer = self.serializer_class(new_person)
 
         # Retrieve updated project
-        project = CTEffort.objects.get(id=proj_id.id)
-        p_serializer = CTEffortSerializer(project, many=False)
+        # project = CTEffort.objects.get(id=proj_id.id)
+        # p_serializer = CTEffortSerializer(project, many=False)
 
         return Response(p_serializer.data, status=200)
 
@@ -379,9 +394,13 @@ class PersonnelViewSet(viewsets.ModelViewSet):
         for field in range(amount):
             new_field = add_field(project_id=proj.id, person_id=id, arm_id=arm)
 
+        # Get person
+        person = Personnel.objects.get(id=id)
+        p_serializer = self.serializer_class(person)
+
         # Retrieve updated project
-        project = CTEffort.objects.get(id=proj.id)
-        p_serializer = CTEffortSerializer(project, many=False)
+        # project = CTEffort.objects.get(id=proj.id)
+        # p_serializer = CTEffortSerializer(project, many=False)
 
         return Response(p_serializer.data, status=200)
 
@@ -393,10 +412,11 @@ class PersonnelViewSet(viewsets.ModelViewSet):
         proj_id = person[0].instance
 
         # Run person update function
-        change_type(object=request.data, proj_id=proj_id.id, person_id=id)
+        person = change_type(object=request.data, proj_id=proj_id.id, person_id=id)
+        p_serializer = self.serializer_class(person)
 
         # Retrieve updated project
-        project = CTEffort.objects.get(id=proj_id.id)
-        p_serializer = CTEffortSerializer(project, many=False)
+        # project = CTEffort.objects.get(id=proj_id.id)
+        # p_serializer = CTEffortSerializer(project, many=False)
 
         return Response(p_serializer.data, status=200)

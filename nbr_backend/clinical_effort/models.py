@@ -1,9 +1,11 @@
 from django.db import models
+from django.contrib import auth
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.models import PermissionsMixin
 from django.utils.translation import gettext_lazy as _
 from django.utils.module_loading import import_string
+from django.conf import settings
 
 from django.utils import timezone
 import datetime
@@ -13,7 +15,7 @@ import datetime
 class CTEffort(models.Model):
     id = models.AutoField(primary_key=True)
     eid = models.CharField(max_length=32, blank=True, null=True)
-    user = models.IntegerField(blank=True, null=True)
+    user = models.ForeignKey(auth.get_user_model(), on_delete=models.CASCADE,)
     protocol_number = models.CharField(max_length=32, blank=True, null=True)
     accounting_number = models.CharField(max_length=32, blank=True, null=True)
     name = models.CharField(max_length=64, blank=True, null=True)
@@ -168,6 +170,7 @@ class Cycles(models.Model):
     class Meta:
         managed = True
         db_table = 'cycles'
+        ordering = ['id']
 
 # Visits model
 class Visits(models.Model):
@@ -194,7 +197,7 @@ class VisitValues(models.Model):
     class Meta:
         managed = True
         db_table = 'visit_values'
-        ordering = ['visit__cycle']
+        ordering = ['visit__cycle', 'id']
 
 ## COMPLEXITY
 # Complexity model

@@ -42,7 +42,7 @@ def update_person(object, person_id=None, proj_id=None):
     person.save()
 
 
-    return True
+    return person
 
 
 # Update cycle visit instances
@@ -61,7 +61,7 @@ def change_type(object, person_id=None, proj_id=None):
     # Add new fields
     add_new_person_fields(proj_id=proj_id, person=person)
 
-    return True
+    return person
 
 
 # Add field

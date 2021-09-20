@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from clinical_effort.models import CTEffort, CycleTypes, PersonnelTypes, TrialArms, Cycles, Visits, VisitValues, Personnel, PersonnelFields
 from clinical_effort.models import Complexity, ComplexityValues, ComplexityTypes, Years, YearValues
+from django.contrib.auth.models import User
 
 # Complexity value
 class ComplexityTypesSerializer(serializers.ModelSerializer):
@@ -66,7 +67,7 @@ class VisitValuesSerializer(serializers.ModelSerializer):
     def get_copy_visit(self, obj):
         copy = obj.visit.cycle.copy_hours
         first_cycle_visit = obj.visit.cycle.visits_set.get(cycle_number=1, visit_number=1).id
-        if first_cycle_visit == obj.visit.id:
+        if first_cycle_visit == obj.visit.id or copy == False:
             return ''
         else:
             return first_cycle_visit
@@ -193,6 +194,7 @@ class BaseCTEffortSerializer(serializers.ModelSerializer):
 
     number_arms = serializers.SerializerMethodField(read_only=True)
     number_people = serializers.SerializerMethodField(read_only=True)
+    created_by = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = CTEffort
@@ -203,6 +205,9 @@ class BaseCTEffortSerializer(serializers.ModelSerializer):
 
     def get_number_people(self, obj):
         return obj.personnel_set.count()
+
+    def get_created_by(self, obj):
+        return obj.user.first_name + ' ' + obj.user.last_name
 
 # Cycle types
 class CycleTypesSerializer(serializers.ModelSerializer):

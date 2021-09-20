@@ -40,7 +40,7 @@ def get_person_arm_df(proj_id, person_id, arm_id):
     # Create df
     df = pd.DataFrame(index=index, columns=cols)
 
-    # Initialize sum
+    # Initialize sum and cycle and visit headers
     for cycle in cycles:
         visits = cycle.visits_set.all()
         for visit in visits:

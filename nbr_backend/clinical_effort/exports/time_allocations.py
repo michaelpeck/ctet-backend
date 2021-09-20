@@ -23,7 +23,6 @@ def get_summary_df(proj_id):
     cols = ['person']
     index = []
     for person in people:
-        row = [person.name]
         index.append(person.id)
     index.append('summary')
 
@@ -33,8 +32,11 @@ def get_summary_df(proj_id):
             visits = cycle.visits_set.all()
             for visit in visits:
                 cols.append(str(visit.id))
+
     # Add values
     df = pd.DataFrame(index=index, columns=cols)
+
+    # Add values
     for person in people:
         df.at[person.id, 'person'] = person.name
         for arm in arms:
@@ -97,7 +99,6 @@ def get_subject_summary_df(summary, people, arms):
     cols = ['person', 'year_hours', 'hours_per_subject', 'per_subject_effort']
     index = []
     for person in people:
-        row = [person.name]
         index.append(person.id)
     index.append('summary')
 
@@ -131,7 +132,6 @@ def get_total_summary_df(proj_id, subject_summary, people, arms):
     cols = ['person', 'total_hours', 'addl_lump_hours', 'addl_lump_effort', 'total_effort', 'total_miris_effort']
     index = []
     for person in people:
-        row = [person.name]
         index.append(person.id)
     index.append('summary')
 
