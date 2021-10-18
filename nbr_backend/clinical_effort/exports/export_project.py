@@ -107,15 +107,15 @@ def create_export(id):
                 cycles = arm.cycles_set.all()
                 cycle_cols = ['Cycle (#)']
                 visit_cols = ['Visit #']
-                i = 0
                 for cycle in cycles:
-                    i += 1
+                    i = 1
                     visits = cycle.visits_set.all()
                     j = 0
                     for visit in visits:
                         j += 1
-                        cycle_cols.append(cycle.name + ' (' + i + ')')
+                        cycle_cols.append(cycle.name + ' (' + str(i) + ')')
                         visit_cols.append(str(j))
+                    i += 1
                 # Cycles
                 cycles_df = pd.DataFrame(columns=cycle_cols)
                 cycles_df.to_excel(writer, sheet_name='time_allocations', index=False, startrow=row_index)
@@ -159,15 +159,15 @@ def create_export(id):
         cycle_cols = ['Cycle (#)-(Visit #)']
         for arm in arms:
             cycles = arm.cycles_set.all()
-            i = 0
             for cycle in cycles:
-                i += 1
+                i = 1
                 visits = cycle.visits_set.all()
                 j = 0
                 for visit in visits:
                     j += 1
                     arm_cols.append(arm.name)
-                    cycle_cols.append(cycle.name + ' (' + i + ')-(' + j + ')')
+                    cycle_cols.append(cycle.name + ' (' + str(i) + ')-(' + str(j) + ')')
+                i += 1
 
         # Arms
         arms_df = pd.DataFrame(columns=arm_cols)
@@ -243,6 +243,15 @@ def create_export(id):
         row_index += df_fte.shape[0] + 2
 
         # FTE by person by arm
+        # Add arm headers
+        arm_cols = ['Arm']
+        for arm in arms:
+            arm_cols.append(arm.name)
+        arms_df = pd.DataFrame(columns=arm_cols)
+        arms_df.to_excel(writer, sheet_name='time_allocations', index=False, startrow=row_index)
+        for col_num, value in enumerate(arms_df.columns.values):
+            worksheet_time.write(row_index, col_num, value, header_format)
+        row_index += 1
         df_fte_person_arm = get_person_arm_fte_df(person_arm_hours_df, people, arms)
         df_fte_person_arm.to_excel(writer, sheet_name='summary', index=False, startrow=row_index)
         for col_num, value in enumerate(df_fte_person_arm.columns.values):

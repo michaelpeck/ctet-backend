@@ -54,5 +54,10 @@ def update_cycle(object, cycle_id=None, proj_id=None):
             if i > old_cycles or j > old_visits:
                 add_visit(cycle_no=i, visit_no=j, cycle_id=cycle_id, proj_id=proj_id)
 
+    # If copy hours checked, update visit values
+    if object['copy_hours'] == True:
+        visits = cycle.visits_set
+        first_visit_value = cycle.visits_set.get(cycle_number=1, visit_number=1).value
+        fields = cycle.
 
     return cycle
