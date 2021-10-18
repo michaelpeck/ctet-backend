@@ -11,20 +11,21 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
 from pathlib import Path
-# from decouple import config
-from decouple import AutoConfig
 import os
+# DEV
+from decouple import config
+# PROD
+# from decouple import AutoConfig
 
 # Config
-# SUB_WEBROOT_DIR = Path(__file__).resolve().parent.parent.parent.parent / 'ctet-backend'
-# config = AutoConfig(search_path=SUB_WEBROOT_DIR)
-config = AutoConfig(search_path='/var/www/ctet-backend/')
+# PROD
+# config = AutoConfig(search_path='/var/www/ctet-backend/')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Allowed hosts
-ALLOWED_HOSTS = ['ctet.nemoursresearch.org']
+ALLOWED_HOSTS = ['ctet.nemoursresearch.org', '127.0.0.1']
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/

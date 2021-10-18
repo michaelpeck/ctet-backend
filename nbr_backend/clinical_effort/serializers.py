@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from clinical_effort.models import CTEffort, CycleTypes, PersonnelTypes, TrialArms, Cycles, Visits, VisitValues, Personnel, PersonnelFields
-from clinical_effort.models import Complexity, ComplexityValues, ComplexityTypes, Years, YearValues
+from clinical_effort.models import Complexity, ComplexityValues, ComplexityTypes, Years, YearValues, Notes
 from django.contrib.auth.models import User
 
 # Complexity value
@@ -53,6 +53,18 @@ class YearsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Years
         fields = '__all__'
+
+# Notes
+class NotesSerializer(serializers.ModelSerializer):
+
+    created_by = serializers.SerializerMethodField(read_only=True)
+
+    class Meta:
+        model = Notes
+        fields = '__all__'
+
+    def get_created_by(self, obj):
+        return obj.user.first_name + ' ' + obj.user.last_name
 
 
 # Visit values
@@ -170,6 +182,7 @@ class CTEffortSerializer(serializers.ModelSerializer):
     # complexity = ComplexitySerializer(source='complexity_set', many=False, required=False)
     people = PersonnelSerializer(source='personnel_set', many=True, required=False)
     years = YearsSerializer(source='years_set', many=True, required=False)
+    notes = NotesSerializer(source='notes_set', many=True, required=False)
 
     class Meta:
         model = CTEffort

@@ -13,9 +13,9 @@ import io
 import os
 import hashlib
 
-from clinical_effort.models import Complexity, ComplexityValues, ComplexityTypes, Years, YearValues
+from clinical_effort.models import Complexity, ComplexityValues, ComplexityTypes, Years, YearValues, Notes
 from clinical_effort.models import CTEffort, CycleTypes, PersonnelTypes, TrialArms, Cycles, Visits, VisitValues, Personnel, PersonnelFields
-from .serializers import CTEffortSerializer, BaseCTEffortSerializer, CycleTypesSerializer, PersonnelTypesSerializer, TrialArmsSerializer, CyclesSerializer, VisitsSerializer, VisitValuesSerializer, PersonnelSerializer, PersonnelFieldsSerializer, ComplexityValuesSerializer, ComplexitySerializer, ComplexityTypesSerializer, YearsSerializer, YearValuesSerializer
+from .serializers import CTEffortSerializer, BaseCTEffortSerializer, CycleTypesSerializer, PersonnelTypesSerializer, TrialArmsSerializer, CyclesSerializer, VisitsSerializer, VisitValuesSerializer, PersonnelSerializer, PersonnelFieldsSerializer, ComplexityValuesSerializer, ComplexitySerializer, ComplexityTypesSerializer, YearsSerializer, YearValuesSerializer, NotesSerializer
 
 from clinical_effort.actions.project import setup_project
 from clinical_effort.actions.people import add_person, update_person, add_field, add_new_person_fields, change_type
@@ -26,29 +26,34 @@ from clinical_effort.actions.years import add_year_value, add_default_years
 
 from clinical_effort.exports.export_project import create_export
 
+# Permission class
+# DEV
+permission_class = permissions.AllowAny
+# PROD
+# permission_class = permissions.IsAuthenticated
+
 # Base clinical trial effort Viewset (no serializer fields)
 class BaseCTEffortViewSet(viewsets.ModelViewSet):
 
     permission_classes = [
-        permissions.IsAuthenticated,
+        permission_class,
     ]
     # queryset = CTEffort.objects.all()
     serializer_class = BaseCTEffortSerializer
     lookup_field = 'id'
 
     def get_queryset(self):
-        """
-        This view should return a list of all the purchases
-        for the currently authenticated user.
-        """
-        user = self.request.user
+        # DEV
+        user = 1
+        # PROD
+        # user = self.request.user
         return CTEffort.objects.filter(user=user)
 
 # Clinical trial effort Viewset
 class CTEffortViewSet(viewsets.ModelViewSet):
 
     permission_classes = [
-        permissions.IsAuthenticated,
+        permission_class,
     ]
     queryset = CTEffort.objects.all()
     serializer_class = CTEffortSerializer
@@ -59,7 +64,10 @@ class CTEffortViewSet(viewsets.ModelViewSet):
 
         # Save project
         new_project = request.data
-        new_project['user'] = self.request.user.id
+        # DEV
+        new_project['user'] = 1
+        # PROD
+        # new_project['user'] = self.request.user.id
         serializer = self.serializer_class(data=new_project)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
@@ -150,7 +158,7 @@ class CTEffortViewSet(viewsets.ModelViewSet):
 class ComplexityTypesViewSet(viewsets.ModelViewSet):
 
     permission_classes = [
-        permissions.IsAuthenticated,
+        permission_class,
     ]
     queryset = ComplexityTypes.objects.all()
     serializer_class = ComplexityTypesSerializer
@@ -160,7 +168,7 @@ class ComplexityTypesViewSet(viewsets.ModelViewSet):
 class ComplexityViewSet(viewsets.ModelViewSet):
 
     permission_classes = [
-        permissions.IsAuthenticated,
+        permission_class,
     ]
     queryset = Complexity.objects.all()
     serializer_class = ComplexitySerializer
@@ -171,7 +179,7 @@ class ComplexityViewSet(viewsets.ModelViewSet):
 class ComplexityValuesViewSet(viewsets.ModelViewSet):
 
     permission_classes = [
-        permissions.IsAuthenticated,
+        permission_class,
     ]
     queryset = ComplexityValues.objects.all()
     serializer_class = ComplexityValuesSerializer
@@ -183,7 +191,7 @@ class ComplexityValuesViewSet(viewsets.ModelViewSet):
 class CycleTypesViewSet(viewsets.ModelViewSet):
 
     permission_classes = [
-        permissions.IsAuthenticated,
+        permission_class,
     ]
     queryset = CycleTypes.objects.all()
     serializer_class = CycleTypesSerializer
@@ -194,7 +202,7 @@ class CycleTypesViewSet(viewsets.ModelViewSet):
 class PersonnelTypesViewSet(viewsets.ModelViewSet):
 
     permission_classes = [
-        permissions.IsAuthenticated,
+        permission_class,
     ]
     queryset = PersonnelTypes.objects.all()
     serializer_class = PersonnelTypesSerializer
@@ -205,7 +213,7 @@ class PersonnelTypesViewSet(viewsets.ModelViewSet):
 class TrialArmsViewSet(viewsets.ModelViewSet):
 
     permission_classes = [
-        permissions.IsAuthenticated,
+        permission_class,
     ]
     queryset = TrialArms.objects.all()
     serializer_class = TrialArmsSerializer
@@ -241,7 +249,7 @@ class TrialArmsViewSet(viewsets.ModelViewSet):
 class CyclesViewSet(viewsets.ModelViewSet):
 
     permission_classes = [
-        permissions.IsAuthenticated,
+        permission_class,
     ]
     queryset = Cycles.objects.all()
     serializer_class = CyclesSerializer
@@ -270,7 +278,7 @@ class CyclesViewSet(viewsets.ModelViewSet):
 class YearsViewSet(viewsets.ModelViewSet):
 
     permission_classes = [
-        permissions.IsAuthenticated,
+        permission_class,
     ]
     queryset = Years.objects.all()
     serializer_class = YearsSerializer
@@ -296,7 +304,7 @@ class YearsViewSet(viewsets.ModelViewSet):
 class YearValuesViewSet(viewsets.ModelViewSet):
 
     permission_classes = [
-        permissions.IsAuthenticated,
+        permission_class,
     ]
     queryset = YearValues.objects.all()
     serializer_class = YearValuesSerializer
@@ -307,7 +315,7 @@ class YearValuesViewSet(viewsets.ModelViewSet):
 class VisitsViewSet(viewsets.ModelViewSet):
 
     permission_classes = [
-        permissions.IsAuthenticated,
+        permission_class,
     ]
     queryset = Visits.objects.all()
     serializer_class = VisitsSerializer
@@ -318,7 +326,7 @@ class VisitsViewSet(viewsets.ModelViewSet):
 class VisitValuesViewSet(viewsets.ModelViewSet):
 
     permission_classes = [
-        permissions.IsAuthenticated,
+        permission_class,
     ]
     queryset = VisitValues.objects.all()
     serializer_class = VisitValuesSerializer
@@ -328,7 +336,7 @@ class VisitValuesViewSet(viewsets.ModelViewSet):
 class PersonnelFieldsViewSet(viewsets.ModelViewSet):
 
     permission_classes = [
-        permissions.IsAuthenticated,
+        permission_class,
     ]
     queryset = PersonnelFields.objects.all()
     serializer_class = PersonnelFieldsSerializer
@@ -356,7 +364,7 @@ class PersonnelFieldsViewSet(viewsets.ModelViewSet):
 class PersonnelViewSet(viewsets.ModelViewSet):
 
     permission_classes = [
-        permissions.IsAuthenticated,
+        permission_class,
     ]
     queryset = Personnel.objects.all()
     serializer_class = PersonnelSerializer
@@ -420,3 +428,13 @@ class PersonnelViewSet(viewsets.ModelViewSet):
         # p_serializer = CTEffortSerializer(project, many=False)
 
         return Response(p_serializer.data, status=200)
+
+# Notes Viewset
+class NotesViewSet(viewsets.ModelViewSet):
+
+    permission_classes = [
+        permission_class,
+    ]
+    queryset = Notes.objects.all()
+    serializer_class = NotesSerializer
+    lookup_field = 'id'

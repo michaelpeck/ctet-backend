@@ -1,5 +1,5 @@
 from rest_framework import routers
-from .api import CTEffortViewSet, BaseCTEffortViewSet, TrialArmsViewSet, PersonnelViewSet, PersonnelFieldsViewSet, CyclesViewSet, ComplexityTypesViewSet, ComplexityValuesViewSet, VisitValuesViewSet, YearsViewSet, YearValuesViewSet
+from .api import CTEffortViewSet, BaseCTEffortViewSet, TrialArmsViewSet, PersonnelViewSet, PersonnelFieldsViewSet, CyclesViewSet, ComplexityTypesViewSet, ComplexityValuesViewSet, VisitValuesViewSet, YearsViewSet, YearValuesViewSet, NotesViewSet
 
 router = routers.DefaultRouter()
 router.register('effort', CTEffortViewSet, 'effort instances')
@@ -10,6 +10,7 @@ router.register('arms', TrialArmsViewSet, 'arms')
 router.register('cycles', CyclesViewSet, 'cycles')
 router.register('values', VisitValuesViewSet, 'values')
 router.register('years', YearsViewSet, 'years')
+router.register('notes', NotesViewSet, 'notes')
 router.register('year_values', YearValuesViewSet, 'year values')
 router.register('complexity_types', ComplexityTypesViewSet, 'complexity types')
 router.register('complexity_values', ComplexityValuesViewSet, 'complexity values')

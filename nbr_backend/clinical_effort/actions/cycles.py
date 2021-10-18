@@ -56,8 +56,18 @@ def update_cycle(object, cycle_id=None, proj_id=None):
 
     # If copy hours checked, update visit values
     if object['copy_hours'] == True:
-        visits = cycle.visits_set
-        first_visit_value = cycle.visits_set.get(cycle_number=1, visit_number=1).value
-        fields = cycle.
+        visits = cycle.visits_set.all()
+        people = cycle.instance.personnel_set.all()
+        arm = cycle.arm
+        first_visit = cycle.visits_set.get(cycle_number=1, visit_number=1)
+        first_visit_values = first_visit.visitvalues_set
+        for person in people:
+            fields = person.personnelfields_set.filter(arm=arm)
+            for field in fields:
+                for visit in visits:
+                    if visit != first_visit:
+                        val = visit.visitvalues_set.get(field=field)
+                        val.value = first_visit_values.get(field=field).value
+                        val.save()
 
     return cycle

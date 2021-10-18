@@ -18,7 +18,7 @@ class CTEffort(models.Model):
     user = models.ForeignKey(auth.get_user_model(), on_delete=models.CASCADE,)
     protocol_number = models.CharField(max_length=32, blank=True, null=True)
     accounting_number = models.CharField(max_length=32, blank=True, null=True)
-    name = models.CharField(max_length=64, blank=True, null=True)
+    name = models.CharField(max_length=128, blank=True, null=True)
     pi = models.CharField(max_length=64, blank=True, null=True)
     estimated_subjects = models.IntegerField(blank=True, null=True, default=0)
     monitor_days = models.IntegerField(blank=True, null=True)
@@ -126,7 +126,7 @@ class PersonnelFields(models.Model):
     id = models.AutoField(primary_key=True)
     person = models.ForeignKey('Personnel',on_delete=models.CASCADE,)
     arm = models.ForeignKey('TrialArms',on_delete=models.CASCADE, null=True)
-    text = models.CharField(max_length=64, blank=True, null=True)
+    text = models.CharField(max_length=128, blank=True, null=True)
 
     class Meta:
         managed = True
@@ -233,3 +233,17 @@ class PersonnelDefaults(models.Model):
     class Meta:
         managed = True
         db_table = 'personnel_defaults'
+
+
+# Notes
+class Notes(models.Model):
+    id = models.AutoField(primary_key=True)
+    instance = models.ForeignKey('CTEffort',on_delete=models.CASCADE,)
+    user = models.ForeignKey(auth.get_user_model(), on_delete=models.PROTECT,)
+    text = models.TextField(blank=True, null=True)
+    created = models.DateTimeField(auto_now=False, auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        managed = True
+        db_table = 'notes'
