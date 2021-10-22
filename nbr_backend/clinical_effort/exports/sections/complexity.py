@@ -5,7 +5,7 @@ import pandas as pd
 
 
 from clinical_effort.models import CTEffort, ComplexityTypes, ComplexityValues
-from ..serializers import CTEffortSerializer
+from clinical_effort.serializers import CTEffortSerializer
 
 
 # Create new project

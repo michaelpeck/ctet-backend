@@ -13,9 +13,8 @@ import io
 import os
 import hashlib
 
-from clinical_effort.models import Complexity, ComplexityValues, ComplexityTypes, Years, YearValues, Notes
-from clinical_effort.models import CTEffort, CycleTypes, PersonnelTypes, TrialArms, Cycles, Visits, VisitValues, Personnel, PersonnelFields
-from .serializers import CTEffortSerializer, BaseCTEffortSerializer, CycleTypesSerializer, PersonnelTypesSerializer, TrialArmsSerializer, CyclesSerializer, VisitsSerializer, VisitValuesSerializer, PersonnelSerializer, PersonnelFieldsSerializer, ComplexityValuesSerializer, ComplexitySerializer, ComplexityTypesSerializer, YearsSerializer, YearValuesSerializer, NotesSerializer
+import clinical_effort.models as m
+import clinical_effort.serializers as s
 
 from clinical_effort.actions.project import setup_project
 from clinical_effort.actions.people import add_person, update_person, add_field, add_new_person_fields, change_type
@@ -39,7 +38,7 @@ class BaseCTEffortViewSet(viewsets.ModelViewSet):
         permission_class,
     ]
     # queryset = CTEffort.objects.all()
-    serializer_class = BaseCTEffortSerializer
+    serializer_class = s.BaseCTEffortSerializer
     lookup_field = 'id'
 
     def get_queryset(self):
@@ -47,7 +46,7 @@ class BaseCTEffortViewSet(viewsets.ModelViewSet):
         user = 1
         # PROD
         # user = self.request.user
-        return CTEffort.objects.filter(user=user)
+        return m.CTEffort.objects.filter(user=user)
 
 # Clinical trial effort Viewset
 class CTEffortViewSet(viewsets.ModelViewSet):
@@ -55,8 +54,8 @@ class CTEffortViewSet(viewsets.ModelViewSet):
     permission_classes = [
         permission_class,
     ]
-    queryset = CTEffort.objects.all()
-    serializer_class = CTEffortSerializer
+    queryset = m.CTEffort.objects.all()
+    serializer_class = s.CTEffortSerializer
     lookup_field = 'id'
 
     @action(detail=False, methods=['PUT'])
@@ -79,7 +78,7 @@ class CTEffortViewSet(viewsets.ModelViewSet):
         add_proj = create_complexity(serializer.data['id'])
 
         # Retrieve new project
-        project = CTEffort.objects.get(id=serializer.data['id'])
+        project = m.CTEffort.objects.get(id=serializer.data['id'])
         p_serializer = self.serializer_class(project, many=False)
 
         return Response(p_serializer.data, status=200)
@@ -106,12 +105,12 @@ class CTEffortViewSet(viewsets.ModelViewSet):
         arm = add_arm(name=arm_name, cycle_names=arm_cycles, type_id=type, proj_id=id)
 
         # Add years for arm
-        years = CTEffort.objects.get(id=id).years_set.all()
+        years = m.CTEffort.objects.get(id=id).years_set.all()
         for year in years:
             add_year_value(year=year, arm=arm)
 
         # Retrieve updated project
-        project = CTEffort.objects.get(id=id)
+        project = m.CTEffort.objects.get(id=id)
         p_serializer = self.serializer_class(project, many=False)
 
         return Response(p_serializer.data, status=200)
@@ -126,7 +125,7 @@ class CTEffortViewSet(viewsets.ModelViewSet):
         add_new_person_fields(proj_id=id, person=person)
 
         # Retrieve updated project
-        project = CTEffort.objects.get(id=id)
+        project = m.CTEffort.objects.get(id=id)
         p_serializer = self.serializer_class(project, many=False)
 
         return Response(p_serializer.data, status=200)
@@ -135,7 +134,6 @@ class CTEffortViewSet(viewsets.ModelViewSet):
     def export(self, request, id=None):
 
         # Create export file
-        print(id)
         export_path = create_export(id=id)
         return_obj = {}
         return_obj['path'] = export_path
@@ -147,10 +145,6 @@ class CTEffortViewSet(viewsets.ModelViewSet):
         #         return response
         # raise Http404
 
-        # # Retrieve updated project
-        # project = CTEffort.objects.get(id=id)
-        # p_serializer = self.serializer_class(project, many=False)
-        #
         return Response(return_obj, status=200)
 
 
@@ -160,8 +154,8 @@ class ComplexityTypesViewSet(viewsets.ModelViewSet):
     permission_classes = [
         permission_class,
     ]
-    queryset = ComplexityTypes.objects.all()
-    serializer_class = ComplexityTypesSerializer
+    queryset = m.ComplexityTypes.objects.all()
+    serializer_class = s.ComplexityTypesSerializer
     lookup_field = 'id'
 
 # Complexity Viewset
@@ -170,8 +164,8 @@ class ComplexityViewSet(viewsets.ModelViewSet):
     permission_classes = [
         permission_class,
     ]
-    queryset = Complexity.objects.all()
-    serializer_class = ComplexitySerializer
+    queryset = m.Complexity.objects.all()
+    serializer_class = s.ComplexitySerializer
     lookup_field = 'id'
 
 
@@ -181,8 +175,8 @@ class ComplexityValuesViewSet(viewsets.ModelViewSet):
     permission_classes = [
         permission_class,
     ]
-    queryset = ComplexityValues.objects.all()
-    serializer_class = ComplexityValuesSerializer
+    queryset = m.ComplexityValues.objects.all()
+    serializer_class = s.ComplexityValuesSerializer
     lookup_field = 'id'
 
 
@@ -193,8 +187,8 @@ class CycleTypesViewSet(viewsets.ModelViewSet):
     permission_classes = [
         permission_class,
     ]
-    queryset = CycleTypes.objects.all()
-    serializer_class = CycleTypesSerializer
+    queryset = m.CycleTypes.objects.all()
+    serializer_class = s.CycleTypesSerializer
     lookup_field = 'id'
 
 
@@ -204,8 +198,8 @@ class PersonnelTypesViewSet(viewsets.ModelViewSet):
     permission_classes = [
         permission_class,
     ]
-    queryset = PersonnelTypes.objects.all()
-    serializer_class = PersonnelTypesSerializer
+    queryset = m.PersonnelTypes.objects.all()
+    serializer_class = s.PersonnelTypesSerializer
     lookup_field = 'id'
 
 
@@ -215,33 +209,25 @@ class TrialArmsViewSet(viewsets.ModelViewSet):
     permission_classes = [
         permission_class,
     ]
-    queryset = TrialArms.objects.all()
-    serializer_class = TrialArmsSerializer
+    queryset = m.TrialArms.objects.all()
+    serializer_class = s.TrialArmsSerializer
     lookup_field = 'id'
 
     @action(detail=True, methods=['GET'])
     def add_cycle(self, request, id=None):
 
         # Get project
-        arm = TrialArms.objects.filter(id=id)
+        arm = m.TrialArms.objects.filter(id=id)
         proj_id = arm[0].instance
 
         # Create arm
         cycle = add_cycle(type='custom', proj_id=proj_id.id, arm_id=id)
 
         # Retrieve updated project
-        project = CTEffort.objects.get(id=proj_id.id)
-        p_serializer = CTEffortSerializer(project, many=False)
+        project = m.CTEffort.objects.get(id=proj_id.id)
+        p_serializer = s.CTEffortSerializer(project, many=False)
 
         return Response(p_serializer.data, status=200)
-
-
-    # @action(detail=False, methods=['GET'])
-    # def new_cycle(self, request, id=None):
-    #     arm = self.queryset.filter(id=id)[0]
-    #     add_cycle(type='custom', proj_id=arm.instance, arm_id=id)
-    #
-    #     return Response('Worked', status=200)
 
 
 
@@ -251,25 +237,21 @@ class CyclesViewSet(viewsets.ModelViewSet):
     permission_classes = [
         permission_class,
     ]
-    queryset = Cycles.objects.all()
-    serializer_class = CyclesSerializer
+    queryset = m.Cycles.objects.all()
+    serializer_class = s.CyclesSerializer
     lookup_field = 'id'
 
     @action(detail=True, methods=['PUT'])
     def cycle_update(self, request, id=None):
 
         # Get project
-        cycle = Cycles.objects.filter(id=id)
+        cycle = m.Cycles.objects.filter(id=id)
         proj_id = cycle[0].instance
         print(proj_id.id)
 
         # Create arm
         cycle = update_cycle(object=request.data, proj_id=proj_id.id, cycle_id=id)
         c_serializer = self.serializer_class(cycle)
-
-        # Retrieve updated project
-        # project = CTEffort.objects.get(id=proj_id.id)
-        # p_serializer = CTEffortSerializer(project, many=False)
 
         return Response(c_serializer.data, status=200)
 
@@ -280,23 +262,22 @@ class YearsViewSet(viewsets.ModelViewSet):
     permission_classes = [
         permission_class,
     ]
-    queryset = Years.objects.all()
-    serializer_class = YearsSerializer
+    queryset = m.Years.objects.all()
+    serializer_class = s.YearsSerializer
     lookup_field = 'id'
 
     @action(detail=True, methods=['GET'])
     def add_year(self, request, id=None):
 
         # Get project
-        # year = Years.objects.get(id=id)
-        proj = CTEffort.objects.get(id=id)
+        proj = m.CTEffort.objects.get(id=id)
 
         # Create arm
         new_year = add_default_years(proj_id=id)
 
         # Retrieve updated project
-        project = CTEffort.objects.get(id=id)
-        p_serializer = CTEffortSerializer(project, many=False)
+        project = m.CTEffort.objects.get(id=id)
+        p_serializer = s.CTEffortSerializer(project, many=False)
 
         return Response(p_serializer.data, status=200)
 
@@ -306,8 +287,8 @@ class YearValuesViewSet(viewsets.ModelViewSet):
     permission_classes = [
         permission_class,
     ]
-    queryset = YearValues.objects.all()
-    serializer_class = YearValuesSerializer
+    queryset = m.YearValues.objects.all()
+    serializer_class = s.YearValuesSerializer
     lookup_field = 'id'
 
 
@@ -317,8 +298,8 @@ class VisitsViewSet(viewsets.ModelViewSet):
     permission_classes = [
         permission_class,
     ]
-    queryset = Visits.objects.all()
-    serializer_class = VisitsSerializer
+    queryset = m.Visits.objects.all()
+    serializer_class = s.VisitsSerializer
     lookup_field = 'id'
 
 
@@ -328,8 +309,8 @@ class VisitValuesViewSet(viewsets.ModelViewSet):
     permission_classes = [
         permission_class,
     ]
-    queryset = VisitValues.objects.all()
-    serializer_class = VisitValuesSerializer
+    queryset = m.VisitValues.objects.all()
+    serializer_class = s.VisitValuesSerializer
     lookup_field = 'id'
 
 # Personnel fields Viewset
@@ -338,8 +319,8 @@ class PersonnelFieldsViewSet(viewsets.ModelViewSet):
     permission_classes = [
         permission_class,
     ]
-    queryset = PersonnelFields.objects.all()
-    serializer_class = PersonnelFieldsSerializer
+    queryset = m.PersonnelFields.objects.all()
+    serializer_class = s.PersonnelFieldsSerializer
     lookup_field = 'id'
 
     @action(detail=True, methods=['GET'])
@@ -353,9 +334,8 @@ class PersonnelFieldsViewSet(viewsets.ModelViewSet):
 
         # Get instance cycles
         instance = field.person.instance
-        instance_s = CTEffortSerializer(instance, many=False)
+        instance_s = s.CTEffortSerializer(instance, many=False)
         cycles = instance_s.data['cycles']
-
 
         return Response(cycles, status=200)
 
@@ -366,24 +346,20 @@ class PersonnelViewSet(viewsets.ModelViewSet):
     permission_classes = [
         permission_class,
     ]
-    queryset = Personnel.objects.all()
-    serializer_class = PersonnelSerializer
+    queryset = m.Personnel.objects.all()
+    serializer_class = s.PersonnelSerializer
     lookup_field = 'id'
 
     @action(detail=True, methods=['PUT'])
     def person_update(self, request, id=None):
 
         # Get project
-        person = Personnel.objects.filter(id=id)
+        person = m.Personnel.objects.filter(id=id)
         proj_id = person[0].instance
 
         # Run person update function
         new_person = update_person(object=request.data, proj_id=proj_id.id, person_id=id)
         p_serializer = self.serializer_class(new_person)
-
-        # Retrieve updated project
-        # project = CTEffort.objects.get(id=proj_id.id)
-        # p_serializer = CTEffortSerializer(project, many=False)
 
         return Response(p_serializer.data, status=200)
 
@@ -391,7 +367,7 @@ class PersonnelViewSet(viewsets.ModelViewSet):
     def add_field(self, request, id=None):
 
         # Get project
-        person = Personnel.objects.filter(id=id)
+        person = m.Personnel.objects.filter(id=id)
         proj = person[0].instance
 
         # amount
@@ -403,12 +379,8 @@ class PersonnelViewSet(viewsets.ModelViewSet):
             new_field = add_field(project_id=proj.id, person_id=id, arm_id=arm)
 
         # Get person
-        person = Personnel.objects.get(id=id)
+        person = m.Personnel.objects.get(id=id)
         p_serializer = self.serializer_class(person)
-
-        # Retrieve updated project
-        # project = CTEffort.objects.get(id=proj.id)
-        # p_serializer = CTEffortSerializer(project, many=False)
 
         return Response(p_serializer.data, status=200)
 
@@ -416,16 +388,12 @@ class PersonnelViewSet(viewsets.ModelViewSet):
     def change_type(self, request, id=None):
 
         # Get project
-        person = Personnel.objects.filter(id=id)
+        person = m.Personnel.objects.filter(id=id)
         proj_id = person[0].instance
 
         # Run person update function
         person = change_type(object=request.data, proj_id=proj_id.id, person_id=id)
         p_serializer = self.serializer_class(person)
-
-        # Retrieve updated project
-        # project = CTEffort.objects.get(id=proj_id.id)
-        # p_serializer = CTEffortSerializer(project, many=False)
 
         return Response(p_serializer.data, status=200)
 
@@ -435,6 +403,26 @@ class NotesViewSet(viewsets.ModelViewSet):
     permission_classes = [
         permission_class,
     ]
-    queryset = Notes.objects.all()
-    serializer_class = NotesSerializer
+    queryset = m.Notes.objects.all()
+    serializer_class = s.NotesSerializer
+    lookup_field = 'id'
+
+# Project Access Viewset
+class ProjectAccessViewSet(viewsets.ModelViewSet):
+
+    permission_classes = [
+        permission_class,
+    ]
+    queryset = m.ProjectAccess.objects.all()
+    serializer_class = s.ProjectAccessSerializer
+    lookup_field = 'id'
+
+# Project Access Types Viewset
+class ProjectAccessTypesViewSet(viewsets.ModelViewSet):
+
+    permission_classes = [
+        permission_class,
+    ]
+    queryset = m.ProjectAccessTypes.objects.all()
+    serializer_class = s.ProjectAccessTypesSerializer
     lookup_field = 'id'

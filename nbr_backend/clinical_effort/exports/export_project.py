@@ -6,11 +6,11 @@ from clinical_effort.models import CTEffort, TrialArms, PersonnelTypes
 from ..serializers import CTEffortSerializer
 
 from .sections.general import get_general_df
-from .complexity_df import get_complexity_df
-from .person_arm_df import get_person_arm_df
-from .structure_df import get_structure_df
-from .time_allocations import get_summary_df, edit_summary_df, get_subject_summary_df, get_total_summary_df, get_person_arm_hours_df, edit_person_arm_hours_df
-from .summary import get_summary_fte_df, get_person_arm_fte_df
+from .sections.complexity import get_complexity_df
+from .sections.personnel import get_person_arm_df
+from .sections.structure import get_structure_df
+from .sections.time_allocations import get_summary_df, edit_summary_df, get_subject_summary_df, get_total_summary_df, get_person_arm_hours_df, edit_person_arm_hours_df
+from .sections.summary import get_summary_fte_df, get_person_arm_fte_df
 
 
 # Create new project

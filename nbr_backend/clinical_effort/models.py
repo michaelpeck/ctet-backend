@@ -247,3 +247,29 @@ class Notes(models.Model):
     class Meta:
         managed = True
         db_table = 'notes'
+
+
+# Project access
+
+# Project access types model
+class ProjectAccessTypes(models.Model):
+    id = models.AutoField(primary_key=True)
+    type = models.CharField(max_length=32, blank=True, null=True)
+    name = models.CharField(max_length=32, blank=True, null=True)
+
+    class Meta:
+        managed = True
+        db_table = 'project_access_types'
+
+# Personnel model
+class ProjectAccess(models.Model):
+    id = models.AutoField(primary_key=True)
+    instance = models.ForeignKey('CTEffort',on_delete=models.CASCADE,)
+    type = models.ForeignKey('ProjectAccessTypes',on_delete=models.CASCADE,)
+    user = models.ForeignKey(auth.get_user_model(), on_delete=models.CASCADE,)
+    created = models.DateTimeField(auto_now=False, auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        managed = True
+        db_table = 'project_access'
