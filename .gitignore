@@ -3,7 +3,7 @@
 migrations/
 nbr_backend/nbr_backend/settings.py
 **/bundle.js*
-
+nbr_backend/static/frontend/*
 
 # Created by https://www.toptal.com/developers/gitignore/api/django
 # Edit at https://www.toptal.com/developers/gitignore?templates=django

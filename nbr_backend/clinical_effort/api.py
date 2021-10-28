@@ -27,9 +27,9 @@ from clinical_effort.exports.export_project import create_export
 
 # Permission class
 # DEV
-permission_class = permissions.AllowAny
+# permission_class = permissions.AllowAny
 # PROD
-# permission_class = permissions.IsAuthenticated
+permission_class = permissions.IsAuthenticated
 
 # Base clinical trial effort Viewset (no serializer fields)
 class BaseCTEffortViewSet(viewsets.ModelViewSet):
@@ -43,10 +43,32 @@ class BaseCTEffortViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         # DEV
-        user = 1
+        # user = 1
         # PROD
-        # user = self.request.user
+        user = self.request.user
         return m.CTEffort.objects.filter(user=user)
+
+# Base Shared Project Viewset (no serializer fields)
+class BaseSharedCTEffortViewSet(viewsets.ModelViewSet):
+
+    permission_classes = [
+        permission_class,
+    ]
+    # queryset = CTEffort.objects.all()
+    serializer_class = s.BaseCTEffortSerializer
+    lookup_field = 'id'
+
+    def get_queryset(self):
+        # DEV
+        # user = 1
+        # PROD
+        user = self.request.user
+
+        # User accesses and related projects
+        accesses = m.ProjectAccess.objects.filter(user=user, type=2).values('instance')
+        related_projects = m.CTEffort.objects.filter(id__in=accesses)
+        
+        return related_projects
 
 # Clinical trial effort Viewset
 class CTEffortViewSet(viewsets.ModelViewSet):
@@ -64,9 +86,9 @@ class CTEffortViewSet(viewsets.ModelViewSet):
         # Save project
         new_project = request.data
         # DEV
-        new_project['user'] = 1
+        # new_project['user'] = 1
         # PROD
-        # new_project['user'] = self.request.user.id
+        new_project['user'] = self.request.user.id
         serializer = self.serializer_class(data=new_project)
         if serializer.is_valid(raise_exception=True):
             serializer.save()

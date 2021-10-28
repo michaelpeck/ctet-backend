@@ -12,14 +12,9 @@ from django.contrib.auth.models import User
 import json
 import io
 
-from .serializers import UserSerializer
+import authentication.models as m
+import authentication.serializers as s
 
-
-# @api_view(['GET'])
-# @permission_classes([permissions.AllowAny])
-# def get_user(request):
-#     user = request.user
-#     return Response('')
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -28,7 +23,7 @@ class UserViewSet(viewsets.ModelViewSet):
         permissions.IsAuthenticated,
     ]
     queryset = User.objects.all()
-    serializer_class = UserSerializer
+    serializer_class = s.UserSerializer
 
     def get_object(self):
         pk = self.kwargs.get('pk')
@@ -37,3 +32,38 @@ class UserViewSet(viewsets.ModelViewSet):
             return self.request.user
 
         return super(UserViewSet, self).get_object()
+
+class UsersViewSet(viewsets.ModelViewSet):
+
+    permission_classes = [
+        permissions.IsAuthenticated,
+    ]
+    queryset = User.objects.all()
+    serializer_class = s.UsersSerializer
+
+    def get_object(self):
+        pk = self.kwargs.get('pk')
+
+        if pk == "current":
+            return self.request.user
+
+        return super(UsersViewSet, self).get_object()
+
+class UserProfilesViewSet(viewsets.ModelViewSet):
+
+    permission_classes = [
+        permissions.IsAuthenticated,
+    ]
+    queryset = m.UserProfiles.objects.all()
+    serializer_class = s.UserProfilesSerializer
+
+    def get_object(self):
+        pk = self.kwargs.get('pk')
+
+        if pk == "current":
+            email_split = self.request.user["email"].split("@", 1)
+            network_id = email_split[0]
+            profile = m.UserProfiles.objects.get(network_id=network_id)
+            return profile
+
+        return super(UserProfilesViewSet, self).get_object()

@@ -4,6 +4,7 @@ import clinical_effort.api as v
 router = routers.DefaultRouter()
 router.register('effort', v.CTEffortViewSet, 'effort instances')
 router.register('projects', v.BaseCTEffortViewSet, 'base effort instances')
+router.register('shared_projects', v.BaseSharedCTEffortViewSet, 'base shared effort instances')
 router.register('access', v.ProjectAccessViewSet, 'project access relationships')
 router.register('access_types', v.ProjectAccessTypesViewSet, 'project access types')
 router.register('people', v.PersonnelViewSet, 'people')

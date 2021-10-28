@@ -13,13 +13,13 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 from pathlib import Path
 import os
 # DEV
-from decouple import config
+# from decouple import config
 # PROD
-# from decouple import AutoConfig
+from decouple import AutoConfig
 
 # Config
 # PROD
-# config = AutoConfig(search_path='/var/www/ctet-backend/')
+config = AutoConfig(search_path='/var/www/ctet-backend/')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
