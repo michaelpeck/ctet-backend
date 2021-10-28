@@ -20,7 +20,7 @@ import authentication.serializers as s
 class UserViewSet(viewsets.ModelViewSet):
 
     permission_classes = [
-        permissions.IsAuthenticated,
+        settings.VIEWSET_PERMISSIONS,
     ]
     queryset = User.objects.all()
     serializer_class = s.UserSerializer
@@ -36,7 +36,7 @@ class UserViewSet(viewsets.ModelViewSet):
 class UsersViewSet(viewsets.ModelViewSet):
 
     permission_classes = [
-        permissions.IsAuthenticated,
+        settings.VIEWSET_PERMISSIONS,
     ]
     queryset = User.objects.all()
     serializer_class = s.UsersSerializer
@@ -52,7 +52,7 @@ class UsersViewSet(viewsets.ModelViewSet):
 class UserProfilesViewSet(viewsets.ModelViewSet):
 
     permission_classes = [
-        permissions.IsAuthenticated,
+        settings.VIEWSET_PERMISSIONS,
     ]
     queryset = m.UserProfiles.objects.all()
     serializer_class = s.UserProfilesSerializer
@@ -61,7 +61,7 @@ class UserProfilesViewSet(viewsets.ModelViewSet):
         pk = self.kwargs.get('pk')
 
         if pk == "current":
-            email_split = self.request.user["email"].split("@", 1)
+            email_split = self.request.user.email.split("@", 1)
             network_id = email_split[0]
             profile = m.UserProfiles.objects.get(network_id=network_id)
             return profile

@@ -12,14 +12,17 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 
 from pathlib import Path
 import os
-# DEV
-# from decouple import config
-# PROD
-from decouple import AutoConfig
+from rest_framework import permissions
 
 # Config
-# PROD
+## DEV
+# from decouple import config
+## PROD
+from decouple import AutoConfig
 config = AutoConfig(search_path='/var/www/ctet-backend/')
+
+# Environment
+ENV_TYPE = config('ENV_TYPE', default='prod')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -101,6 +104,12 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_PERMISSION_CLASSES': [],
 }
+
+# Viewset permissions
+if ENV_TYPE == 'prod':
+    VIEWSET_PERMISSIONS = permissions.IsAuthenticated
+else:
+    VIEWSET_PERMISSIONS = permissions.AllowAny
 
 
 # Database
