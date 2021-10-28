@@ -29,7 +29,10 @@ class UserViewSet(viewsets.ModelViewSet):
         pk = self.kwargs.get('pk')
 
         if pk == "current":
-            return self.request.user
+            if settings.ENV_TYPE == 'dev':
+                return User.objects.get(id=1)
+            else:
+                return self.request.user
 
         return super(UserViewSet, self).get_object()
 
@@ -45,7 +48,10 @@ class UsersViewSet(viewsets.ModelViewSet):
         pk = self.kwargs.get('pk')
 
         if pk == "current":
-            return self.request.user
+            if settings.ENV_TYPE == 'dev':
+                return User.objects.get(id=1)
+            else:
+                return self.request.user
 
         return super(UsersViewSet, self).get_object()
 
@@ -61,7 +67,11 @@ class UserProfilesViewSet(viewsets.ModelViewSet):
         pk = self.kwargs.get('pk')
 
         if pk == "current":
-            email_split = self.request.user.email.split("@", 1)
+            if settings.ENV_TYPE == 'dev':
+                user = User.objects.get(id=1)
+            else:
+                user = self.request.user
+            email_split = user.email.split("@", 1)
             network_id = email_split[0]
             profile = m.UserProfiles.objects.get(network_id=network_id)
             return profile

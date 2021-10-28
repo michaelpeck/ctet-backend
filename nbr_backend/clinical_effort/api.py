@@ -12,9 +12,12 @@ import json
 import io
 import os
 import hashlib
+from datetime import date
 
 import clinical_effort.models as m
 import clinical_effort.serializers as s
+
+from authentication.models import UserProfiles
 
 from clinical_effort.actions.project import setup_project
 from clinical_effort.actions.people import add_person, update_person, add_field, add_new_person_fields, change_type
@@ -37,10 +40,10 @@ class BaseCTEffortViewSet(viewsets.ModelViewSet):
     lookup_field = 'id'
 
     def get_queryset(self):
-        # DEV
-        # user = 1
-        # PROD
+        # Set user (check if dev)
         user = self.request.user
+        if settings.ENV_TYPE == 'dev':
+            user = 1
         return m.CTEffort.objects.filter(user=user)
 
 # Base Shared Project Viewset (no serializer fields)
@@ -54,10 +57,10 @@ class BaseSharedCTEffortViewSet(viewsets.ModelViewSet):
     lookup_field = 'id'
 
     def get_queryset(self):
-        # DEV
-        # user = 1
-        # PROD
+        # Set user (check if dev)
         user = self.request.user
+        if settings.ENV_TYPE == 'dev':
+            user = 1
 
         # User accesses and related projects
         accesses = m.ProjectAccess.objects.filter(user=user, type=2).values('instance')
@@ -80,10 +83,23 @@ class CTEffortViewSet(viewsets.ModelViewSet):
 
         # Save project
         new_project = request.data
-        # DEV
-        # new_project['user'] = 1
-        # PROD
-        new_project['user'] = self.request.user.id
+
+        # Eid number
+        next_id = self.get_queryset().latest('created').id + 1
+        id_string = f"{next_id:05}"
+
+        # Check if dev environment and set vars accordingly
+        if settings.ENV_TYPE == 'dev':
+            new_project['user'] = 1
+            new_project['eid'] = 'CTET-00000-' + id_string
+        else:
+            new_project['user'] = self.request.user.id
+            email_split = self.request.user.email.split("@", 1)
+            network_id = email_split[0]
+            lawson_id = UserProfiles.objects.get(network_id=network_id).employee_id
+            new_project['eid'] = 'CTET-' + lawson_id + '-' + id_string
+
+        # Serialize project and save
         serializer = self.serializer_class(data=new_project)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
