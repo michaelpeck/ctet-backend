@@ -91,13 +91,13 @@ class CTEffortViewSet(viewsets.ModelViewSet):
         # Check if dev environment and set vars accordingly
         if settings.ENV_TYPE == 'dev':
             new_project['user'] = 1
-            new_project['eid'] = 'CTET-00000-' + id_string
+            new_project['eid'] = '00000-' + id_string
         else:
             new_project['user'] = self.request.user.id
             email_split = self.request.user.email.split("@", 1)
             network_id = email_split[0]
             lawson_id = UserProfiles.objects.get(network_id=network_id).employee_id
-            new_project['eid'] = 'CTET-' + lawson_id + '-' + id_string
+            new_project['eid'] = lawson_id + '-' + id_string
 
         # Serialize project and save
         serializer = self.serializer_class(data=new_project)

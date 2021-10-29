@@ -16,10 +16,10 @@ from rest_framework import permissions
 
 # Config
 ## DEV
-from decouple import config
+# from decouple import config
 ## PROD
-# from decouple import AutoConfig
-# config = AutoConfig(search_path='/var/www/ctet-backend/')
+from decouple import AutoConfig
+config = AutoConfig(search_path='/var/www/ctet-backend/')
 
 # Environment
 ENV_TYPE = config('ENV_TYPE', default='prod')
