@@ -15,7 +15,7 @@ import datetime
 class CTEffort(models.Model):
     id = models.AutoField(primary_key=True)
     eid = models.CharField(max_length=32, blank=True, null=True)
-    user = models.ForeignKey(auth.get_user_model(), on_delete=models.CASCADE,)
+    user = models.ForeignKey(auth.get_user_model(), on_delete=models.PROTECT,)
     protocol_number = models.CharField(max_length=32, blank=True, null=True)
     accounting_number = models.CharField(max_length=32, blank=True, null=True)
     name = models.CharField(max_length=128, blank=True, null=True)

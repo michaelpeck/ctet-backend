@@ -44,7 +44,12 @@ class BaseCTEffortViewSet(viewsets.ModelViewSet):
         user = self.request.user
         if settings.ENV_TYPE == 'dev':
             user = 1
-        return m.CTEffort.objects.filter(user=user)
+
+        # User accesses and related projects
+        accesses = m.ProjectAccess.objects.filter(user=user, type=1).values('instance')
+        owned_projects = m.CTEffort.objects.filter(id__in=accesses)
+
+        return owned_projects
 
 # Base Shared Project Viewset (no serializer fields)
 class BaseSharedCTEffortViewSet(viewsets.ModelViewSet):
