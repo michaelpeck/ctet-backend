@@ -1,4 +1,4 @@
-from clinical_effort.models import CTEffort, CycleTypes, Cycles, ProjectAccess
+from clinical_effort.models import CTEffort, CycleTypes, Cycles
 from ..serializers import CTEffortSerializer
 
 
@@ -11,6 +11,8 @@ def setup_project(object, id=None):
 
     # Get project
     project = CTEffort.objects.get(id=id)
+
+    # Add eid
 
     # Add people
     add_default_people(id)
@@ -30,9 +32,6 @@ def setup_project(object, id=None):
     # Add years
     add_default_years(id)
 
-    # Add ownership
-    ownership = ProjectAccess(instance=project, type=1, user=project.user)
-    ownership.save()
 
     project = CTEffort.objects.get(id=id)
     serializer = CTEffortSerializer(project, many=False)

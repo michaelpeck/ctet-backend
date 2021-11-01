@@ -88,6 +88,7 @@ class CTEffortViewSet(viewsets.ModelViewSet):
 
         # Save project
         new_project = request.data
+        # new_owner = { "type": 1 }
 
         # Eid number
         next_id = self.get_queryset().latest('created').id + 1
@@ -96,9 +97,11 @@ class CTEffortViewSet(viewsets.ModelViewSet):
         # Check if dev environment and set vars accordingly
         if settings.ENV_TYPE == 'dev':
             new_project['user'] = 1
+            # new_owner['user'] = 1
             new_project['eid'] = '00000-' + id_string
         else:
             new_project['user'] = self.request.user.id
+            # new_owner['user'] = self.request.user.id
             email_split = self.request.user.email.split("@", 1)
             network_id = email_split[0]
             lawson_id = UserProfiles.objects.get(network_id=network_id).employee_id
@@ -108,6 +111,12 @@ class CTEffortViewSet(viewsets.ModelViewSet):
         serializer = self.serializer_class(data=new_project)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
+
+        # Serialize project and save
+        # new_owner['instance'] = serializer.data['id']
+        # owner_serializer = ProjectAccessSerializer(data=new_owner)
+        # if owner_serializer.is_valid(raise_exception=True):
+        #     owner_serializer.save()
 
         # Call setup project action
         add_proj = setup_project(request.data, serializer.data['id'])
