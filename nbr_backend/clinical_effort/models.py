@@ -18,7 +18,7 @@ class CTEffort(models.Model):
     user = models.ForeignKey(auth.get_user_model(), on_delete=models.PROTECT,)
     protocol_number = models.CharField(max_length=32, blank=True, null=True)
     accounting_number = models.CharField(max_length=32, blank=True, null=True)
-    name = models.CharField(max_length=128, blank=True, null=True)
+    name = models.CharField(max_length=500, blank=True, null=True)
     pi = models.CharField(max_length=64, blank=True, null=True)
     estimated_subjects = models.IntegerField(blank=True, null=True, default=0)
     monitor_days = models.IntegerField(blank=True, null=True)
@@ -108,7 +108,7 @@ class TrialArms(models.Model):
     id = models.AutoField(primary_key=True)
     instance = models.ForeignKey('CTEffort',on_delete=models.CASCADE,)
     type = models.ForeignKey('TrialArmTypes',on_delete=models.CASCADE, null=True)
-    name = models.CharField(max_length=32, blank=True, null=True)
+    name = models.CharField(max_length=128, blank=True, null=True)
     estimated_duration = models.FloatField(blank=True, default=0)
     start_date = models.DateTimeField(auto_now=False, blank=True, null=True)
     end_date = models.DateTimeField(auto_now=False, blank=True, null=True)
@@ -126,7 +126,7 @@ class PersonnelFields(models.Model):
     id = models.AutoField(primary_key=True)
     person = models.ForeignKey('Personnel',on_delete=models.CASCADE,)
     arm = models.ForeignKey('TrialArms',on_delete=models.CASCADE, null=True)
-    text = models.CharField(max_length=128, blank=True, null=True)
+    text = models.CharField(max_length=300, blank=True, null=True)
 
     class Meta:
         managed = True

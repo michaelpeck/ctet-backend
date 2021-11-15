@@ -166,7 +166,7 @@ class CTEffortViewSet(viewsets.ModelViewSet):
     def add_person(self, request, id=None):
 
         # Add person
-        person = add_person(proj_id=id, type_id=5, amount=1)
+        person = add_person(proj_id=id, type_id=5, number='X')
 
         # Add fields for arms
         add_new_person_fields(proj_id=id, person=person)

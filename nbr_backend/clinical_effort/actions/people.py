@@ -3,7 +3,7 @@ from clinical_effort.models import CTEffort, Cycles, Visits, PersonnelTypes, Per
 from .visits import add_value
 
 # Add person
-def add_person(proj_id, type_id, amount):
+def add_person(proj_id, type_id, number):
 
     # Retrieve project and cycle
     project = CTEffort.objects.get(id=proj_id)
@@ -11,7 +11,8 @@ def add_person(proj_id, type_id, amount):
     cycles = project.cycles_set.all()
 
     # Add person
-    new_person = Personnel(instance=project, type=type, name=type.name, amount=1)
+    name = 'Default person ' + number
+    new_person = Personnel(instance=project, type=type, name=name, amount=1)
     new_person.save()
 
     return new_person
@@ -24,8 +25,10 @@ def add_default_people(proj_id):
     types = PersonnelTypes.objects.all()
 
     # Add people
+    i = 1
     for type in types:
-        add_person(proj_id=proj_id, type_id=type.id, amount=1)
+        add_person(proj_id=proj_id, type_id=type.id, number=str(i))
+        i += 1
 
     return True
 
